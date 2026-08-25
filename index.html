@@ -30,11 +30,17 @@
   }
   .addbtn:hover{transform:translateY(-1px);opacity:.92}
   h2{
-    max-width:1200px;margin:48px auto 16px;font-size:13px;font-weight:650;
-    letter-spacing:.09em;text-transform:uppercase;color:var(--accent);
+    max-width:1200px;margin:48px auto 16px;font-size:14px;font-weight:650;
+    letter-spacing:.05em;text-transform:uppercase;color:var(--accent);
     border-bottom:1px solid var(--line);padding-bottom:8px;
     display:flex;justify-content:space-between;align-items:center;gap:12px;
   }
+  .cat-title-wrap{display:flex;align-items:center;gap:8px}
+  .cat-edit-btn{
+    background:none;border:none;cursor:pointer;font-size:13px;padding:2px 6px;
+    border-radius:4px;color:var(--muted);transition:color .12s ease, background .12s ease;
+  }
+  .cat-edit-btn:hover{color:var(--ink);background:var(--line)}
   h2 .count{color:var(--muted);font-weight:500;letter-spacing:0;text-transform:none;font-size:12px}
   .grid{
     max-width:1200px;margin:0 auto;display:grid;gap:18px;
@@ -121,6 +127,7 @@
 <div id="content"><p class="empty">Lade Produkte...</p></div>
 <footer id="footer"></footer>
 
+<!-- Produkt Modal -->
 <div class="overlay" id="overlay">
   <div class="modal">
     <h3 id="modalTitle">Produkt bearbeiten</h3>
@@ -134,7 +141,7 @@
       </div>
       <div class="field" id="newCatField" style="display:none">
         <label>Name der neuen Kategorie</label>
-        <input type="text" id="f_newCategory" placeholder="z. B. Balkon">
+        <input type="text" id="f_newCategory" placeholder="z. B. Balkon oder Flur">
       </div>
       <div class="field">
         <label>Produktname</label>
@@ -210,8 +217,8 @@ const SEED_PRODUCTS = [
   {"category":"Küche","url":"https://www.otto.de/p/kochmaster-samowar-kochmaster-aura-elektrischer-samowar-aus-glas-S00GO0TQ/","img":"https://i.otto.de/i/otto/1ca31375-6810-4971-bcee-40e6c5db7734/kochmaster-samowar-kochmaster-aura-elektrischer-samowar-aus-glas-2000-w.jpg?$formatz$","noimg":"","badge":"ausverkauft","pick":"","name":"KOCHMASTER Aura Samowar · Glas","price":"149,00 €","oldPrice":"","id":21},
   {"category":"Küche","url":"https://www.otto.de/p/sekey-jalousie-holzjalousie-50-mm-lamellen-fensterjalousie-blickschutz-jalousie-klemmtraeger-mit-feststellschraube-fenster-tuer-echtholz-rollo-120x180-cm-holzrollo-naturholzfarbe-S0ZD90ZO/","img":"https://i.otto.de/i/otto/70e28613-2bea-47e4-a8d7-786e70cb2b7f/sekey-jalousie-holzjalousie-50-mm-lamellen-fensterjalousie-blickschutz-jalousie-klemmtrager-mit-feststellschraube-fenster-tur-echtholz-rollo-80x130-cm-holzrollo-naturholzfarbe-naturholzfarbe.jpg?$formatz$","noimg":"","badge":"","pick":"","name":"Sekey Holzjalousie · 50 mm Lamellen","price":"63,99 €","oldPrice":"120,99 €","id":22},
   {"category":"Bad","url":"https://www.sklum.com/de/kaufen-schiebetur-duschabtrennungen/199088-quadratische-duschwand-mit-schiebeturen-6-mm-gehartetem-glas-und-brent-aluminium.html","img":"https://cdn.sklum.com/de/4282010-large_default/quadratische-duschwand-mit-schiebeturen-6-mm-gehartetem-glas-und-brent-aluminium.jpg","noimg":"","badge":"","pick":"","name":"SKLUM Duschwand „Brent\" · Schiebetüren","price":"179,95 €","oldPrice":"","id":23},
-  {"category":"Bad","url":"https://www.kaufland.de/product/543333201/","img":"https://media.cdn.kaufland.de/product-images/original/260e533e1de1d8c2159342d3ee87bdbc.jpg","noimg":"","badge":"","pick":"","name":"PLATAN ROOM DANTE · Waschmaschinenschrank","price":"183,00 €","oldPrice":"","id":24},
-  {"category":"Bad","url":"https://www.otto.de/p/magowa-badkommode-hochschrank-badezimmerschrank-funktional-h174-cm-x-b60-cm-x-t30-cm-das-grifflose-tip-on-oeffnungssystem-CS0BAE0AI/","img":"https://i.otto.de/i/otto/97189da7-7c7f-4682-8ce0-9af1bbf2b596/ibonto-hochschrank-badezimmerschrank-regal-stilvoll-praktischer-aufbewahrung-mattweiss.jpg?$formatz$","noimg":"","badge":"2,4 ★","pick":"","name":"Badhochschrank 174 cm · jetzt „IBONTO\"","price":"219,95 €","oldPrice":"","id":25},
+  {"category":"Bad","url":"https://www.kaufland.de/product/543333201/", "img":"https://media.cdn.kaufland.de/product-images/original/260e533e1de1d8c2159342d3ee87bdbc.jpg","noimg":"","badge":"","pick":"","name":"PLATAN ROOM DANTE · Waschmaschinenschrank","price":"183,00 €","oldPrice":"","id":24},
+  {"category":"Bad","url":"https://www.otto.de/p/magowa-badkommode-hochschrank-badezimmerschrank-funktional-h174-cm-x-b60-cm-x-t30-cm-das-grifflose-tip-on-oeffnungssystem-CS0BAE0AI/","img":"https://i.otto.de/i/otto/97189da7-7c7f-4682-8ce0-9af1bbf2b596/ibonto-hochschrank-badezimmerschrank-regal-stilvoll-praktischer-aufbewahrung-mattweiss.jpg?$formatz$","noimg":"","badge":"2,4 ★","pick":"","name":"Badhochschrank 174 cm · jetzt „IBONTO\"", "price":"219,95 €","oldPrice":"","id":25},
   {"category":"Bad","url":"https://www.otto.de/p/youyijia-schuessel-washbasin-tap-bathroom-sink-fittings-stainless-steel-kupfer-S0QC40Y0/","img":"https://i.otto.de/i/otto/5ab1579c-daec-45a9-bdbe-8d4188ea54e1/youyijia-schussel-washbasin-tap-bathroom-sink-fittings-stainless-steel-kupfer.jpg?$formatz$","noimg":"","badge":"","pick":"","name":"Youyijia Waschtischarmatur · Kupferoptik","price":"49,99 €","oldPrice":"67,87 €","id":26},
   {"category":"Bad","url":"https://www.otto.de/p/joop-handtuch-selection-1711-handtuch-gemustert-beige-100-baumwolle-S0IF00LJ/","img":"https://i.otto.de/i/otto/787d39af-a4ef-59ce-ac04-01c35a2bc454/joop-handtuch-selection-1711-handtuch-gemustert-beige-100-baumwolle.jpg?$formatz$","noimg":"","badge":"ausverkauft","pick":"","name":"JOOP! Handtuch Selection 1711","price":"21,95 €","oldPrice":"","id":27},
   {"category":"Arbeitszimmer, Haushalt, Renovierung","url":"https://amzn.eu/d/07WRe7CQ","img":"","noimg":"Kein Bild abrufbar (Amazon)","badge":"","pick":"","name":"dreame Z30 Akku-Staubsauger","price":"Preis offen","oldPrice":"","id":29},
@@ -219,7 +226,7 @@ const SEED_PRODUCTS = [
   {"category":"Arbeitszimmer, Haushalt, Renovierung","url":"https://www.otto.de/p/rituals-pflege-geschenkset-rituals-luxury-hair-care-collection-trial-set-5-tlg-ideales-set-fuer-die-haarpflege-unterwegs-S07G50PA/","img":"https://i.otto.de/i/otto/4b093044-0d33-570a-b22a-4266fbdb6bba/rituals-pflege-geschenkset-rituals-luxury-hair-care-collection-trial-set-5-tlg-ideales-set-fuer-die-haarpflege-unterwegs.jpg?$formatz$","noimg":"","badge":"","pick":"","name":"Rituals Hair Care Trial Set · 5-tlg","price":"72,90 €","oldPrice":"82,90 €","id":32},
   {"category":"Arbeitszimmer, Haushalt, Renovierung","name":"TROTTEN Schreibtisch sitz/steh, weiß, 120x70 cm","url":"https://www.ikea.com/de/de/p/trotten-schreibtisch-sitz-steh-weiss-s99429578/","img":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKGBS7blzzS39NpWuxjdASMBawVBEYNzORm1e_xqeb8A&s=10","noimg":"","price":"129.00€","oldPrice":"","badge":"nur Online","pick":"","id":35},
   {"category":"Schlafzimmer · Bett (4 Kandidaten)","name":"Livetastic SCHREIBTISCH 120/60/70-115 cm Weiß elektrisch höhenverstellbar","url":"https://www.xxxlutz.de/p/livetastic-schreibtisch-120-60-70-115-cm-weiss-elektrisch-hoehenverstellbar-000788010201","img":"https://media.xxxlutz.com/i/xxxlutz/PIap7YzmOK5DtK52dSxNzMHQ/?fmt=auto&%24hq%24=&w=1200","noimg":"","price":"89,90 €","oldPrice":"","badge":"","pick":"","id":37},
-  {"category":"Schlafzimmer · Bett (4 Kandidaten)","name":"ALEX Schubladenelement, weiß, 36x70 cm","url":"https://www.ikea.com/de/de/p/alex-schubladenelement-weiss-00473546/","img":"https://www.ikea.com/de/de/images/products/alex-schubladenelement-weiss__0977775_pe813763_s5.jpg?f=xu","noimg":"","price":"79.99€","oldPrice":"","badge":"","pick":"","id":38},
+  {"category":"Schlafzimmer · Bett (4 Kandidaten)","name":"ALEX Schubladenelement, weiß, 36x70 cm","url":"https://www.ikea.com/de/de/p/alex-schubladenelement-weiss-00473546/","img":"https://i.otto.de/i/otto/1b3fee32-cfea-50bc-ba2d-5bdce191c5b2/otto-home-kleiderschrank-trento-schlafzimmerschrank-garderobe-hochglanz-in-2-unterschiedlichen-schrankhoehen-waehlbar-schrank-mit-6-tueren-und-9-schubladen-hochglanz-fronten-2-0-m-hoehe-weiss.jpg?$formatz$","noimg":"","price":"79.99€","oldPrice":"","badge":"","pick":"","id":38},
   {"category":"Zum Stöbern","url":"https://www.sklum.com/de/524-kaufen-mobel","img":"","noimg":"SKLUM Möbel-Übersicht","badge":"","pick":"","name":"SKLUM · alle Möbel","price":"Shop","oldPrice":"","id":33}
 ];
 
@@ -268,12 +275,18 @@ function render(){
   }
   const categories = [];
   for(const p of products){
-    if(!categories.includes(p.category)) categories.push(p.category);
+    if(p.category && !categories.includes(p.category)) categories.push(p.category);
   }
   let html = '';
   for(const cat of categories){
     const items = products.filter(p => p.category === cat);
-    html += `<h2>${escapeHtml(cat)}<span class="count">${items.length} ${items.length===1?'Produkt':'Produkte'}</span></h2>`;
+    html += `<h2>
+      <span class="cat-title-wrap">
+        <span>${escapeHtml(cat)}</span>
+        <button class="cat-edit-btn" onclick="renameCategory('${escapeHtml(cat)}')" title="Kategorie umbenennen">✏️</button>
+      </span>
+      <span class="count">${items.length} ${items.length===1?'Produkt':'Produkte'}</span>
+    </h2>`;
     html += '<div class="grid">';
     for(const p of items){
       html += '<div class="cardwrap">';
@@ -300,11 +313,27 @@ function render(){
     `${products.length} Produkte in ${categories.length} Kategorien.`;
 }
 
+async function renameCategory(oldName){
+  const newName = prompt(`Kategorie "${oldName}" umbenennen in:`, oldName);
+  if(!newName || newName.trim() === '' || newName.trim() === oldName) return;
+
+  const trimmed = newName.trim();
+  products = products.map(p => {
+    if(p.category === oldName){
+      return { ...p, category: trimmed };
+    }
+    return p;
+  });
+
+  render();
+  await saveProducts();
+}
+
 function populateCategorySelect(selectedCategory = ''){
   const sel = document.getElementById('f_category');
   const categories = [];
   for(const p of products){
-    if(!categories.includes(p.category)) categories.push(p.category);
+    if(p.category && !categories.includes(p.category)) categories.push(p.category);
   }
   sel.innerHTML = '';
   for(const c of categories){
@@ -316,8 +345,9 @@ function populateCategorySelect(selectedCategory = ''){
   }
   const newOpt = document.createElement('option');
   newOpt.value = '__new__'; 
-  newOpt.textContent = '+ Neue Kategorie...';
+  newOpt.textContent = '+ Neue Kategorie erstellen...';
   sel.appendChild(newOpt);
+  
   sel.onchange = () => {
     document.getElementById('newCatField').style.display = sel.value === '__new__' ? 'block' : 'none';
   };
