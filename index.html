@@ -1,754 +1,532 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Unsere Wohnung 🛋️ Galerie & Budget</title>
-  <style>
-    :root {
-      --bg: #faf9f7;
-      --card: #ffffff;
-      --ink: #1c1b1f;
-      --muted: #6f6e77;
-      --line: #e6e2dc;
-      --accent: #7d6a55;
-      --accent-hover: #655442;
-      --accent-light: #f1ece4;
-      --fav: #e5a11c;
-      --warn: #a84242;
-      --shadow: 0 8px 24px rgba(0,0,0,0.06);
-      --radius: 14px;
-    }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unsere Wohnung – Galerie</title>
+<style>
+  :root{
+    --bg:#faf9f7; --card:#ffffff; --ink:#1c1b19; --muted:#78736c;
+    --line:#e6e2dc; --accent:#7d6a55; --warn:#a8443a;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#161513; --card:#201f1c; --ink:#f2efea; --muted:#9c968d;
+           --line:#332f2a; --accent:#c4a882; --warn:#e08b80; }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    padding:32px 20px 64px;
+  }
+  header{max-width:1200px;margin:0 auto 40px;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:flex-start}
+  h1{font-size:28px;font-weight:650;letter-spacing:-.02em;margin:0 0 8px}
+  .sub{color:var(--muted);font-size:14px;max-width:60ch;margin:0}
+  .btn-bar{display:flex;gap:10px;flex-wrap:wrap}
+  .addbtn{
+    flex-shrink:0;background:var(--accent);color:#fff;border:none;border-radius:10px;
+    padding:12px 18px;font-size:14px;font-weight:650;cursor:pointer;
+    box-shadow:0 4px 14px rgba(0,0,0,.12);transition:transform .12s ease, opacity .12s ease;
+  }
+  .addbtn:hover{transform:translateY(-1px);opacity:.92}
+  h2{
+    max-width:1200px;margin:48px auto 16px;font-size:14px;font-weight:650;
+    letter-spacing:.05em;text-transform:uppercase;color:var(--accent);
+    border-bottom:1px solid var(--line);padding-bottom:8px;
+    display:flex;justify-content:space-between;align-items:center;gap:12px;
+  }
+  .cat-title-wrap{display:flex;align-items:center;gap:8px}
+  .cat-edit-btn{
+    background:none;border:none;cursor:pointer;font-size:13px;padding:2px 6px;
+    border-radius:4px;color:var(--muted);transition:color .12s ease, background .12s ease;
+  }
+  .cat-edit-btn:hover{color:var(--ink);background:var(--line)}
+  h2 .count{color:var(--muted);font-weight:500;letter-spacing:0;text-transform:none;font-size:12px}
+  .grid{
+    max-width:1200px;margin:0 auto;display:grid;gap:18px;
+    grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+  }
+  .cardwrap{position:relative}
+  .card{
+    display:flex;flex-direction:column;height:100%;background:var(--card);
+    border:1px solid var(--line);border-radius:12px;overflow:hidden;
+    cursor:pointer;color:inherit;transition:transform .16s ease, box-shadow .16s ease;
+  }
+  .card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.10)}
+  .thumb{
+    position:relative;aspect-ratio:1/1;background:#fff;
+    display:flex;align-items:center;justify-content:center;overflow:hidden;
+  }
+  .thumb img{width:100%;height:100%;object-fit:contain;padding:8px}
+  .noimg{
+    color:var(--muted);font-size:12px;text-align:center;padding:16px;line-height:1.45;
+    background:repeating-linear-gradient(45deg,transparent,transparent 8px,rgba(125,106,85,.05) 8px,rgba(125,106,85,.05) 16px);
+    width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  }
+  .meta{padding:11px 13px 13px;display:flex;flex-direction:column;gap:3px}
+  .name{font-size:13px;font-weight:560;line-height:1.35}
+  .price{font-size:14px;font-weight:680;letter-spacing:-.01em}
+  .price small{font-weight:400;color:var(--muted);text-decoration:line-through;margin-left:5px;font-size:12px}
+  .badge{
+    position:absolute;top:8px;left:8px;background:var(--warn);color:#fff;
+    font-size:10px;font-weight:650;letter-spacing:.05em;text-transform:uppercase;
+    padding:3px 7px;border-radius:5px;
+  }
+  .pick{
+    position:absolute;top:8px;right:8px;background:var(--accent);color:#fff;
+    font-size:10px;font-weight:650;padding:3px 7px;border-radius:5px;
+  }
+  footer{max-width:1200px;margin:56px auto 0;color:var(--muted);font-size:12px;
+    border-top:1px solid var(--line);padding-top:16px}
 
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #161513;
-        --card: #201f1c;
-        --ink: #f1ece4;
-        --muted: #a09d98;
-        --line: #332f2a;
-        --accent: #c4a882;
-        --accent-hover: #d8be99;
-        --accent-light: #2c2720;
-        --fav: #f5b73d;
-        --warn: #e06c6c;
-        --shadow: 0 8px 24px rgba(0,0,0,0.4);
-      }
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: var(--bg);
-      color: var(--ink);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      padding: 24px 20px 80px;
-      line-height: 1.5;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 16px;
-      margin-bottom: 36px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    h1 {
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-    }
-
-    .sub {
-      color: var(--muted);
-      font-size: 14px;
-      margin-top: 4px;
-    }
-
-    .header-actions {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      background: var(--accent);
-      color: #ffffff;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 30px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: var(--shadow);
-      transition: background 0.2s, transform 0.1s;
-      text-decoration: none;
-    }
-
-    .btn:hover {
-      background: var(--accent-hover);
-      transform: translateY(-1px);
-    }
-
-    .btn-secondary {
-      background: var(--card);
-      color: var(--ink);
-      border: 1px solid var(--line);
-    }
-
-    .btn-secondary:hover {
-      background: var(--accent-light);
-    }
-
-    .cart-badge {
-      background: #ffffff;
-      color: var(--accent);
-      border-radius: 50%;
-      padding: 2px 7px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .category-section {
-      margin-bottom: 40px;
-    }
-
-    .category-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 16px;
-      padding-bottom: 8px;
-      border-bottom: 2px solid var(--line);
-    }
-
-    .category-title {
-      font-size: 20px;
-      font-weight: 600;
-    }
-
-    .category-stats {
-      font-size: 14px;
-      color: var(--muted);
-      display: flex;
-      gap: 12px;
-    }
-
-    .category-stats strong {
-      color: var(--ink);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-    }
-
-    .card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow);
-    }
-
-    .card.selected {
-      border-color: var(--accent);
-      background: var(--accent-light);
-    }
-
-    .card-img-wrap {
-      width: 100%;
-      height: 190px;
-      background: var(--line);
-      overflow: hidden;
-      position: relative;
-      cursor: pointer;
-    }
-
-    .card-img-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .fav-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: rgba(0,0,0,0.4);
-      backdrop-filter: blur(4px);
-      border: none;
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 16px;
-      color: #fff;
-      transition: transform 0.15s, background 0.15s;
-      z-index: 2;
-    }
-
-    .fav-btn:hover {
-      transform: scale(1.15);
-    }
-
-    .fav-btn.active {
-      background: #ffffff;
-      color: var(--fav);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    }
-
-    .card-content {
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      flex-grow: 1;
-    }
-
-    .card-title {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 4px;
-      color: var(--ink);
-      text-decoration: none;
-      display: inline-block;
-    }
-
-    .card-title:hover {
-      color: var(--accent);
-      text-decoration: underline;
-    }
-
-    .card-desc {
-      color: var(--muted);
-      font-size: 13px;
-      margin-bottom: 12px;
-      flex-grow: 1;
-    }
-
-    .card-actions-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-
-    .shop-link {
-      font-size: 12px;
-      color: var(--accent);
-      text-decoration: none;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .shop-link:hover {
-      text-decoration: underline;
-    }
-
-    .card-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: auto;
-      padding-top: 10px;
-      border-top: 1px solid var(--line);
-    }
-
-    .card-price {
-      font-size: 16px;
-      font-weight: 700;
-    }
-
-    .select-toggle {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .select-toggle input {
-      accent-color: var(--accent);
-      cursor: pointer;
-      width: 16px;
-      height: 16px;
-    }
-
-    /* DRAWER */
-    .drawer-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.4);
-      backdrop-filter: blur(2px);
-      z-index: 900;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-
-    .drawer-overlay.open {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .drawer {
-      position: fixed;
-      top: 0; right: -420px;
-      width: 100%; max-width: 400px; height: 100%;
-      background: var(--card);
-      box-shadow: -4px 0 24px rgba(0,0,0,0.15);
-      z-index: 1000;
-      display: flex;
-      flex-direction: column;
-      transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .drawer.open { right: 0; }
-
-    .drawer-header {
-      padding: 20px;
-      border-bottom: 1px solid var(--line);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .drawer-header h2 { font-size: 18px; font-weight: 600; }
-
-    .close-btn {
-      background: none; border: none; font-size: 20px;
-      cursor: pointer; color: var(--muted); padding: 4px;
-    }
-
-    .drawer-body {
-      padding: 20px;
-      overflow-y: auto;
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .drawer-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px;
-      background: var(--bg);
-      border-radius: 8px;
-      font-size: 13px;
-    }
-
-    .drawer-item-title { font-weight: 600; text-decoration: none; color: var(--ink); }
-    .drawer-item-title:hover { text-decoration: underline; color: var(--accent); }
-    .drawer-item-cat { font-size: 11px; color: var(--muted); }
-    .drawer-item-price { font-weight: 700; white-space: nowrap; margin-left: 12px; }
-
-    .drawer-footer {
-      padding: 20px;
-      border-top: 1px solid var(--line);
-      background: var(--bg);
-    }
-
-    .total-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-
-    /* MODAL (PRODUKT HINZUFÜGEN) */
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5);
-      backdrop-filter: blur(3px);
-      z-index: 1100;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-    }
-
-    .modal-overlay.open {
-      display: flex;
-    }
-
-    .modal {
-      background: var(--card);
-      border-radius: var(--radius);
-      width: 100%;
-      max-width: 480px;
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-
-    .modal-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--line);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .modal-body {
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .form-group label {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--muted);
-    }
-
-    .form-group input, .form-group select, .form-group textarea {
-      padding: 10px 12px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      font-size: 14px;
-      background: var(--bg);
-      color: var(--ink);
-      outline: none;
-    }
-
-    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-      border-color: var(--accent);
-    }
-
-    .modal-footer {
-      padding: 16px 20px;
-      border-top: 1px solid var(--line);
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      background: var(--bg);
-    }
-  </style>
+  .overlay{
+    position:fixed;inset:0;background:rgba(20,18,15,.5);display:none;
+    align-items:center;justify-content:center;padding:20px;z-index:10;
+  }
+  .overlay.open{display:flex}
+  .modal{
+    background:var(--card);border-radius:14px;max-width:520px;width:100%;
+    padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.25);max-height:90vh;overflow:auto;
+  }
+  .modal h3{margin:0 0 18px;font-size:18px;font-weight:650}
+  .modal-preview{
+    width:100%;height:140px;object-fit:contain;background:#fff;border-radius:8px;
+    margin-bottom:16px;border:1px solid var(--line);
+  }
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12px;font-weight:650;color:var(--muted);margin-bottom:5px;
+    text-transform:uppercase;letter-spacing:.04em}
+  .field input, .field select{
+    width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;
+    background:var(--bg);color:var(--ink);font-size:14px;font-family:inherit;
+  }
+  .field input:focus, .field select:focus{outline:2px solid var(--accent);outline-offset:-1px}
+  
+  .url-input-group{display:flex;gap:8px}
+  .fetch-btn{
+    flex-shrink:0;background:var(--bg);border:1px solid var(--line);color:var(--ink);
+    padding:0 12px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;
+    transition:background .12s ease;
+  }
+  .fetch-btn:hover{background:var(--line)}
+  
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .modalbtns{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:24px;flex-wrap:wrap}
+  .modalbtns-right{display:flex;gap:10px}
+  .btn{padding:10px 18px;border-radius:9px;border:none;font-size:14px;font-weight:650;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+  .btn.primary{background:var(--accent);color:#fff}
+  .btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--line)}
+  .btn.danger{background:transparent;color:var(--warn);border:1px solid var(--warn)}
+  .btn.shoplink{background:#2a2825;color:#fff}
+  .empty{max-width:1200px;margin:0 auto;color:var(--muted);font-size:14px;padding:20px 0}
+</style>
 </head>
 <body>
 
-  <div class="container">
-    <header>
-      <div>
-        <h1>Unsere Wohnung 🛋️ Galerie</h1>
-        <div class="sub" id="user-sub">Produkte vergleichen, Favoriten markieren und Gesamtkosten planen</div>
-      </div>
-      <div class="header-actions">
-        <button class="btn btn-secondary" onclick="openAddModal()">＋ Produkt hinzufügen</button>
-        <button class="btn" onclick="toggleDrawer()">
-          🛒 Übersicht
-          <span class="cart-badge" id="cart-badge">0</span>
-          <span id="cart-btn-total">0,00 €</span>
-        </button>
-      </div>
-    </header>
-
-    <div id="catalog"></div>
+<header>
+  <div>
+    <h1 id="pageHeading">Unsere Wohnung – Galerie</h1>
+    <p class="sub">Live synchronisiert. Alle Änderungen sind sofort auf allen Geräten sichtbar.</p>
   </div>
-
-  <!-- DRAWER -->
-  <div class="drawer-overlay" id="drawer-overlay" onclick="toggleDrawer()"></div>
-  <div class="drawer" id="drawer">
-    <div class="drawer-header">
-      <h2>Ausgewählte Produkte</h2>
-      <button class="close-btn" onclick="toggleDrawer()">✕</button>
-    </div>
-    <div class="drawer-body" id="drawer-items"></div>
-    <div class="drawer-footer">
-      <div class="total-row">
-        <span>Gesamtsumme:</span>
-        <span id="drawer-total">0,00 €</span>
-      </div>
-    </div>
+  <div class="btn-bar">
+    <button class="addbtn" onclick="openAddModal()">+ Produkt hinzufügen</button>
   </div>
+</header>
 
-  <!-- MODAL: PRODUKT HINZUFÜGEN -->
-  <div class="modal-overlay" id="add-modal" onclick="closeAddModal(event)">
-    <div class="modal" onclick="event.stopPropagation()">
-      <div class="modal-header">
-        <h3>Neues Produkt hinzufügen</h3>
-        <button class="close-btn" onclick="closeAddModal()">✕</button>
-      </div>
-      <form id="add-product-form" onsubmit="handleAddProduct(event)">
-        <div class="modal-body">
-          <div class="form-group">
-            <label>Produktname *</label>
-            <input type="text" id="p-title" placeholder="z. B. IKEA Strandmon Sessel" required>
-          </div>
-          <div class="form-group">
-            <label>Kategorie / Raum *</label>
-            <input type="text" id="p-category" placeholder="z. B. Wohnzimmer, Flur, Küche" list="cat-suggestions" required>
-            <datalist id="cat-suggestions">
-              <option value="Wohnzimmer">
-              <option value="Küche & Essbereich">
-              <option value="Schlafzimmer">
-              <option value="Flur">
-              <option value="Badezimmer">
-              <option value="Balkon">
-            </datalist>
-          </div>
-          <div class="form-group">
-            <label>Preis in € *</label>
-            <input type="number" id="p-price" step="0.01" min="0" placeholder="199.99" required>
-          </div>
-          <div class="form-group">
-            <label>Produktlink / Shop-URL</label>
-            <input type="url" id="p-url" placeholder="https://www.ikea.com/...">
-          </div>
-          <div class="form-group">
-            <label>Bild-URL</label>
-            <input type="url" id="p-img" placeholder="https://...">
-          </div>
-          <div class="form-group">
-            <label>Beschreibung</label>
-            <textarea id="p-desc" rows="2" placeholder="Farbe, Maße, Details..."></textarea>
-          </div>
+<div id="content"><p class="empty">Lade Produkte...</p></div>
+<footer id="footer"></footer>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h3 id="modalTitle">Produkt bearbeiten</h3>
+    <img id="modalImgPreview" class="modal-preview" src="" alt="Vorschau" style="display:none">
+    
+    <form id="productForm">
+      <input type="hidden" id="f_id">
+      
+      <div class="field">
+        <label>Link zum Shop</label>
+        <div class="url-input-group">
+          <input type="url" id="f_url" required placeholder="https://..." onpaste="handleUrlPaste(event)">
+          <button type="button" class="fetch-btn" id="btnAutoFetch" onclick="fetchProductData()">✨ Abrufen</button>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" onclick="closeAddModal()">Abbrechen</button>
-          <button type="submit" class="btn">Hinzufügen</button>
+      </div>
+
+      <div class="field">
+        <label>Kategorie</label>
+        <select id="f_category"></select>
+      </div>
+      <div class="field" id="newCatField" style="display:none">
+        <label>Name der neuen Kategorie</label>
+        <input type="text" id="f_newCategory" placeholder="z. B. Balkon, Flur">
+      </div>
+
+      <div class="field">
+        <label>Produktname</label>
+        <input type="text" id="f_name" required placeholder="z. B. IKEA MALM Kommode">
+      </div>
+
+      <div class="field">
+        <label>Bild-URL (optional)</label>
+        <input type="url" id="f_img" placeholder="https://..." oninput="updatePreview(this.value)">
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label>Preis</label>
+          <input type="text" id="f_price" placeholder="z. B. 199,00 €">
         </div>
-      </form>
-    </div>
+        <div class="field">
+          <label>Alter Preis (optional)</label>
+          <input type="text" id="f_oldPrice" placeholder="z. B. 249 €">
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Badge (optional)</label>
+          <input type="text" id="f_badge" placeholder="z. B. ausverkauft">
+        </div>
+        <div class="field">
+          <label>Label (optional)</label>
+          <input type="text" id="f_pick" placeholder="z. B. Favorit">
+        </div>
+      </div>
+
+      <div class="modalbtns">
+        <div>
+          <button type="button" class="btn danger" id="btnDelete" onclick="deleteCurrentProduct()" style="display:none">Löschen</button>
+        </div>
+        <div class="modalbtns-right">
+          <a href="#" target="_blank" rel="noopener" class="btn shoplink" id="btnShopLink" style="display:none">Zum Shop ↗</a>
+          <button type="button" class="btn ghost" onclick="closeModal()">Schließen</button>
+          <button type="submit" class="btn primary" id="btnSubmit">Speichern</button>
+        </div>
+      </div>
+    </form>
   </div>
+</div>
 
-  <script>
-    const defaultItems = [
-      { id: 1, category: "Wohnzimmer", title: "SÖDERHAMN 3er-Sofa", desc: "Fridtuna hellbeige, gemütlich und modular", price: 549.00, img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500", url: "https://www.ikea.com/de/de/p/soederhamn-3er-sofa-fridtuna-hellbeige-s09449618/", selected: true, favorite: true },
-      { id: 2, category: "Wohnzimmer", title: "Couchtisch BORGEBY", desc: "Birkenfurnier, 70 cm rund mit Ablage", price: 89.99, img: "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=500", url: "https://www.ikea.com/de/de/p/borgeby-couchtisch-birkenfurnier-70389881/", selected: true, favorite: false },
-      { id: 3, category: "Wohnzimmer", title: "TV-Bank BESTÅ", desc: "Weiß mit Türen, 180x42x64 cm", price: 195.00, img: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=500", url: "https://www.ikea.com/de/de/cat/besta-system-46053/", selected: false, favorite: true },
-      { id: 4, category: "Küche & Essbereich", title: "Esstisch LISABO", desc: "Eschenfurnier, 140x78 cm", price: 179.00, img: "https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf?w=500", url: "https://www.ikea.com/de/de/p/lisabo-tisch-eschenfurnier-70294339/", selected: true, favorite: true },
-      { id: 5, category: "Küche & Essbereich", title: "Stühle INGOLF (4er-Set)", desc: "Massivholz weiß gebeizt", price: 260.00, img: "https://images.unsplash.com/photo-1503602642458-232111445657?w=500", url: "https://www.ikea.com/de/de/p/ingolf-stuhl-weiss-70103250/", selected: true, favorite: false },
-      { id: 6, category: "Schlafzimmer", title: "MALM Bettgestell", desc: "180x200 cm mit 4 Schubladen", price: 299.00, img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=500", url: "https://www.ikea.com/de/de/p/malm-bettgestell-hoch-mit-4-schubladen-weiss-s29006978/", selected: true, favorite: true },
-      { id: 7, category: "Schlafzimmer", title: "PAX Kleiderschrank", desc: "200x236 cm mit Schiebetüren", price: 620.00, img: "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=500", url: "https://www.ikea.com/de/de/cat/pax-system-19086/", selected: true, favorite: false }
-    ];
+<script>
+const DB_URL = "https://wohnung-einrichtung-default-rtdb.firebaseio.com";
+const PROXY_URL = "https://script.google.com/macros/s/AKfycbyWqG-kLwHZZ_wA7l1fA3o-eYqYl_DEINE_ID/exec"; 
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const currentUser = urlParams.get('user') || 'standard';
-    const storageKey = `wohnung_items_data_${currentUser}`;
+const SEED_PRODUCTS = [
+  {"category":"Schlafzimmer · Bett (4 Kandidaten)","url":"https://www.xxxlutz.de/p/chameo-polsterbett-180-200-cm-in-beige-gepolstertes-kopfteil-lattenrost-bettkasten-002330009701","img":"https://media.xxxlutz.com/i/xxxlutz/PIlPZpsW3cZ117oikyQpa_Bw/?fmt=auto&w=600","noimg":"","badge":"","pick":"","name":"CHAMEO Polsterbett · XXXLutz","price":"791,28 €","oldPrice":"1.099 €","id":1},
+  {"category":"Schlafzimmer · Bett (4 Kandidaten)","url":"https://www.otto.de/p/moeblo-polsterbett-aus-boucle-bett-06-bezug-boucle-doppelbett-mit-kopfstuetze-rahmenbettgestell-mit-bettkasten-und-lattenrost-gepolstertes-kopfteil-S0LBH0AZ/","img":"https://i.otto.de/i/otto/9154705f-ad98-4c92-8ab8-7795f3d93d72/moeblo-polsterbett-aus-boucle-bett-06-bezug-boucle-doppelbett-mit-kopfstutze-rahmenbettgestell-mit-bettkasten-und-lattenrost-gepolstertes-kopfteil-creme-anthology-20.jpg?$formatz$","noimg":"","badge":"","pick":"günstigster","name":"MOEBLO Bouclé „Bett 06\"","price":"679,00 €","oldPrice":"975 €","id":2},
+  {"category":"Schlafzimmer · Bett (4 Kandidaten)","url":"https://www.otto.de/p/beautysofa-polsterbett-mit-bettkasten-und-rahmen-motti-140-160-oder-180cm-mit-oder-ohne-matratze-S0FDX0KL/","img":"https://i.otto.de/i/otto/f03f6c72-3561-43fa-9a7a-867469658679/beautysofa-polsterbett-mit-bettkasten-und-rahmen-motti-140-160-oder-180cm-mit-oder-ohne-matratze-creme-catchme01.jpg?$formatz$","noimg":"","badge":"","pick":"","name":"Beautysofa MOTTI","price":"729,00 €","oldPrice":"1.999 €","id":3},
+  {"category":"Schlafzimmer · Bett (4 Kandidaten)","url":"https://www.otto.de/p/thematys-polsterbett-mit-bettkasten-cloud-140x200-160x200-180x200-200x200cm-kopfteil-im-modernen-look-hochwertiger-boucle-stoff-inklusive-lattenrost-hochwertiger-stoff-hydraulische-klappfunktion-fuer-stauraum-S0KG10KG/","img":"https://i.otto.de/i/otto/45943c39-7a36-474d-808d-c3b83e0551b5/thematys-polsterbett-mit-bettkasten-cloud-140x200-160x200-180x200-200x200cm-kopfteil-im-modernen-look-hochwertiger-boucle-stoff-inklusive-lattenrost-hochwertiger-stoff-hydraulische-klappfunktion-fuer-stauraum-latte.jpg?$formatz$","noimg":"","badge":"","pick":"","name":"thematys ALMA · Serie CLOUD","price":"859,00 €","oldPrice":"1.549 €","id":4},
+  {"category":"Schlafzimmer · Matratze, Topper, Schrank","url":"https://amzn.eu/d/07purMi5","img":"https://img-www.bett1.de/unsafe/rt:fit/w:800/h:0/g:sm/plain//media/23/89/16/1738228180/bett1_bodyguard-anti-kartell-matratze_gallery-01_de.png","noimg":"","badge":"","pick":"","name":"bett1 BODYGUARD Matratze 180×200","price":"ca. 479 €","oldPrice":"","id":5},
+  {"category":"Schlafzimmer · Matratze, Topper, Schrank","url":"https://amzn.eu/d/04mq8k6t","img":"","noimg":"Kein Bild abrufbar (Amazon)","badge":"","pick":"","name":"bett1 BODYGUARD Topper 180×200","price":"Preis offen","oldPrice":"","id":6},
+  {"category":"Schlafzimmer · Matratze, Topper, Schrank","url":"https://www.otto.de/p/otto-home-kleiderschrank-trento-schlafzimmerschrank-garderobe-hochglanz-in-2-unterschiedlichen-schrankhoehen-waehlbar-schrank-mit-6-tueren-und-9-schubladen-hochglanz-fronten-2-0-m-hoehe-2008696339/","img":"https://i.otto.de/i/otto/1b3fee32-cfea-50bc-ba2d-5bdce191c5b2/otto-home-kleiderschrank-trento-schlafzimmerschrank-garderobe-hochglanz-in-2-unterschiedlichen-schrankhoehen-waehlbar-schrank-mit-6-tueren-und-9-schubladen-hochglanz-fronten-2-0-m-hoehe-weiss.jpg?$formatz$","noimg":"","badge":"","pick":"","name":"Kleiderschrank Trento · mit Türen","price":"599,99 €","oldPrice":"1.099,99 €","id":7},
+  {"category":"Schlafzimmer · Matratze, Topper, Schrank","url":"https://www.otto.de/p/marmex-moebel-schranksystem-tres-set-r-grosser-offener-garderobenschrank-begehbarer-kleiderschrank-6-st-380-x-206-x-51-fuenf-kleiderstangen-6-schubladen-schrankmodule-S00EI0D7/","img":"https://i.otto.de/i/otto/b37fe071-2cdb-46c0-9a5b-1e595268d24f/marmex-mobel-schranksystem-tres-set-r-grosser-offener-garderobenschrank-begehbarer-kleiderschrank-6-st-380-x-206-x-51-funf-kleiderstangen-6-schubladen-schrankmodule.jpg?$formatz$","noimg":"","badge":"","pick":"","name":"Marmex TRES SET R · offen, 380 cm","price":"1.013,00 €","oldPrice":"1.192 €","id":8},
+  {"category":"Flur und Garderobe","url":"https://www.otto.de/p/abiks-moebel-kompaktgarderobe-inova-1-satz-8-moebelset-garderobe-mit-kleiderstange-und-regalen-S00BL00W/","img":"https://i.otto.de/i/otto/e4396b1c-a387-4d66-a97a-786f13695fff/abiks-mobel-kompaktgarderobe-inova-1-satz-8-mobelset-garderobe-mit-kleiderstange-und-regalen-schwarz-gold-manila-18.jpg?$formatz$","noimg":"","badge":"","pick":"","name":"ABIKS Kompaktgarderobe INOVA · 250 cm","price":"1.599,00 €","oldPrice":"","id":9},
+  {"category":"Esstisch (4 Kandidaten)","url":"https://www.otto.de/p/flieks-essgruppe-esstisch-mit-6-stuehlen-set-7-tlg-tisch-mit-6-stuehlen-rechteckig-kuechentisch-in-walnussholzfarbe-esszimmerstuehle-leinen-S0LIU0X4/","img":"https://i.otto.de/i/otto/9ee2fb06-a54d-494d-8b05-93b7ccbe7c5d/flieks-essgruppe-esstisch-mit-6-stuhlen-set-7-tlg-tisch-mit-6-stuhlen-rechteckig-kuchentisch-in-walnussholzfarbe-esszimmerstuhle-leinen-beige-beige.jpg?$formatz$","noimg":"","badge":"","pick":"inkl. 6 Stühle","name":"Flieks Essgruppe · 7-teilig","price":"525,99 €","oldPrice":"859,99 €","id":10},
+  {"category":"Esstisch (4 Kandidaten)","url":"https://www.otto.de/p/compleo-esstisch-luxurioeser-tisch-mit-butterfly-auszug-esszimmer-moebel-made-in-eu-breite-nach-wahl-180-oder-200-cm-S0CGZ0A2/","img":"https://i.otto.de/i/otto/306bfafa-3387-40fb-b3bd-2aba3c9d02c6/compleo-esstisch-luxurioser-tisch-mit-butterfly-auszug-esszimmer-mobel-made-in-eu-breite-nach-wahl-180-oder-200-cm-eiche-craft-schwarz.jpg?$formatz$","noimg":"","badge":"","pick":"","name":"COMPLEO oval · Butterfly-Auszug","price":"679,00 €","oldPrice":"999 €","id":11},
+  {"category":"Esstisch (4 Kandidaten)","url":"https://www.sklum.com/de/kaufen-esstische/175942-ovaler-ausziehbarer-esstisch-160-200x100-cm-aus-mdf-und-nussbaumfurnier-gala.html","img":"https://cdn.sklum.com/de/3968372-large_default/ovaler-ausziehbarer-esstisch-160-200x100-cm-aus-mdf-und-nussbaumfurnier-gala.jpg","noimg":"","badge":"","pick":"","name":"SKLUM „Gala\" · oval, Nussbaum","price":"739,95 €","oldPrice":"","id":12},
+  {"category":"Esstisch (4 Kandidaten)","url":"https://www.otto.de/p/compleo-esstisch-rechteckiger-designer-esstisch-breite-180-oder-200-cm-luxusmoebel-made-in-eu-S01H00JF/","img":"https://i.otto.de/i/otto/1ff2b555-2d16-492d-ac5d-cda025379ccc/compleo-esstisch-rechteckiger-designer-esstisch-breite-180-oder-200-cm-luxusmobel-made-in-eu-schwarz-marmor-schwarz.jpg?$formatz$","noimg":"","badge":"","pick":"","name":"COMPLEO rechteckig · Marmoroptik","price":"829,00 €","oldPrice":"","id":13},
+  {"category":"Stühle (2 Kandidaten, je 2er-Set)","url":"https://www.otto.de/p/lvhom-armlehnstuhl-m-form-freizeitstuhl-bistrostuhl-buerostuhl-polsterstuhl-besucherstuhl-runde-sessel-mit-breiter-polsterung-flauschiger-stoffstuhl-2-st-fuer-esszimmer-wohnzimmer-buero-schlafzimmer-wartezimmer-lobbys-S0KCV025/","img":"https://i.otto.de/i/otto/28800804-b0c0-4751-ae9c-26d9b420c2f1/lvhom-armlehnstuhl-m-form-freizeitstuhl-bistrostuhl-burostuhl-polsterstuhl-besucherstuhl-runde-sessel-mit-breiter-polsterung-flauschiger-stoffstuhl-2-st-fur-esszimmer-wohnzimmer-buro-schlafzimmer-wartezimmer-lobbys-beige-samt.jpg?$formatz$","noimg":"","badge":"","pick":"","name":"LVHOM Armlehnstuhl M-Form · Samt","price":"319,08 €","oldPrice":"445,39 €","id":14},
+  {"category":"Stühle (2 Kandidaten, je 2er-Set)","url":"https://www.otto.de/p/pemora-freischwinger-schwingstuhl-armlehnstuhl-2-er-set-jena-al-wiener-geflecht-montiert-S0P810J7/","img":"https://i.otto.de/i/otto/dc308f0d-7be3-4df8-91fa-b2cc4e01d457/pemora-freischwinger-schwingstuhl-armlehnstuhl-2-er-set-jena-al-wiener-geflecht-montiert-natur.jpg?$formatz$","noimg":"","badge":"","pick":"","name":"PEMORA JENA AL · Wiener Geflecht","price":"429,90 €","oldPrice":"","id":15},
+  {"category":"Wohnzimmer","url":"https://www.otto.de/p/taracarpet-teppich-taracarpet-ziegler-wohnzimmer-schlafzimmer-esszimmer-rechteckig-hoehe-9-mm-wohnzimmer-schlafzimmer-esszimmer-ziegler-beige-240x340-S0AIT0SA/","img":"https://i.otto.de/i/otto/1e570a49-bd5a-5af0-9298-11fa28678040/taracarpet-teppich-taracarpet-ziegler-wohnzimmer-schlafzimmer-esszimmer-rechteckig-hoehe-9-mm-wohnzimmer-schlafzimmer-esszimmer-ziegler-beige-133x195.jpg?$formatz$","noimg":"","badge":"","pick":"","name":"TaraCarpet Ziegler · 240×340 cm","price":"179,00 €","oldPrice":"359 €","id":16},
+  {"category":"Wohnzimmer","url":"https://www.otto.de/p/otto-home-highboard-malmedy-front-mit-gefraesten-rillen-kommode-midischrank-aus-massivem-kiefernholz-push-to-open-b-100-cm-1954587039/","img":"https://i.otto.de/i/otto/5213baf4-04e6-5585-a411-3a9784a3f2e7/otto-home-highboard-malmedy-front-mit-gefraesten-rillen-kommode-midischrank-aus-massivem-kiefernholz-push-to-open-b-100-cm-natur-gebeizt-gewachst-korpus-natur-gebeizt-gewachst.jpg?$formatz$","noimg":"","badge":"","pick":"","name":"INOSIGN Highboard Malmedy · Kiefer","price":"399,99 €","oldPrice":"719,99 €","id":17},
+  {"category":"Wohnzimmer","url":"https://rugeditorial.com/de/products/celeste-abstrakter-aquarellteppich-abwaschbar","img":"https://rugeditorial.com/cdn/shop/files/J-4-150x215-BROWN_85fc1764-7100-4126-9e46-4bb91b8933f3.jpg?v=1776433892&width=800","noimg":"","badge":"","pick":"","name":"Celeste Abstrakter Aquarellteppich","price":"159","oldPrice":"","id":36},
+  {"category":"Küche","url":"https://www.otto.de/p/smeg-kaffeevollautomat-bcc13whmeu-inkl-milchbehaelter-C1819169925/","img":"https://i.otto.de/i/otto/d47ea606-7a44-5676-9748-984dd81c0f40/smeg-kaffeevollautomat-bcc13whmeu-inkl-milchbehaelter-weiss.jpg?$formatz$","noimg":"","badge":"2,7 ★","pick":"","name":"Smeg Kaffeevollautomat BCC13","price":"649,00 €","oldPrice":"799 €","id":18},
+  {"category":"Küche","url":"https://www.kleinanzeigen.de/s-anzeige/villeroy-boch-new-moon-essgeschirr-48-teilig/3380219944-86-1889","img":"https://img.kleinanzeigen.de/api/v1/prod-ads/images/fb/fb8a8f6b-076b-473a-b3b1-3f2cf8d419ce?rule=$_59.JPG","noimg":"","badge":"","pick":"","name":"Villeroy & Boch New Moon · 48-tlg, gebraucht","price":"501,00 €","oldPrice":"650 €","id":19},
+  {"category":"Küche","url":"https://www.otto.de/p/kochmaster-samowar-kochmaster-aura-elektrischer-samowar-aus-glas-S00GO0TQ/","img":"https://i.otto.de/i/otto/1ca31375-6810-4971-bcee-40e6c5db7734/kochmaster-samowar-kochmaster-aura-elektrischer-samowar-aus-glas-2000-w.jpg?$formatz$","noimg":"","badge":"ausverkauft","pick":"","name":"KOCHMASTER Aura Samowar · Glas","price":"149,00 €","oldPrice":"","id":21},
+  {"category":"Küche","url":"https://www.otto.de/p/sekey-jalousie-holzjalousie-50-mm-lamellen-fensterjalousie-blickschutz-jalousie-klemmtraeger-mit-feststellschraube-fenster-tuer-echtholz-rollo-120x180-cm-holzrollo-naturholzfarbe-S0ZD90ZO/","img":"https://i.otto.de/i/otto/70e28613-2bea-47e4-a8d7-786e70cb2b7f/sekey-jalousie-holzjalousie-50-mm-lamellen-fensterjalousie-blickschutz-jalousie-klemmtrager-mit-feststellschraube-fenster-tur-echtholz-rollo-80x130-cm-holzrollo-naturholzfarbe-naturholzfarbe.jpg?$formatz$","noimg":"","badge":"","pick":"","name":"Sekey Holzjalousie · 50 mm Lamellen","price":"63,99 €","oldPrice":"120,99 €","id":22},
+  {"category":"Bad","url":"https://www.sklum.com/de/kaufen-schiebetur-duschabtrennungen/199088-quadratische-duschwand-mit-schiebeturen-6-mm-gehartetem-glas-und-brent-aluminium.html","img":"https://cdn.sklum.com/de/4282010-large_default/quadratische-duschwand-mit-schiebeturen-6-mm-gehartetem-glas-und-brent-aluminium.jpg","noimg":"","badge":"","pick":"","name":"SKLUM Duschwand „Brent\" · Schiebetüren","price":"179,95 €","oldPrice":"","id":23},
+  {"category":"Bad","url":"https://www.kaufland.de/product/543333201/","img":"https://media.cdn.kaufland.de/product-images/original/260e533e1de1d8c2159342d3ee87bdbc.jpg","noimg":"","badge":"","pick":"","name":"PLATAN ROOM DANTE · Waschmaschinenschrank","price":"183,00 €","oldPrice":"","id":24},
+  {"category":"Bad","url":"https://www.otto.de/p/magowa-badkommode-hochschrank-badezimmerschrank-funktional-h174-cm-x-b60-cm-x-t30-cm-das-grifflose-tip-on-oeffnungssystem-CS0BAE0AI/","img":"https://i.otto.de/i/otto/97189da7-7c7f-4682-8ce0-9af1bbf2b596/ibonto-hochschrank-badezimmerschrank-regal-stilvoll-praktischer-aufbewahrung-mattweiss.jpg?$formatz$","noimg":"","badge":"2,4 ★","pick":"","name":"Badhochschrank 174 cm · jetzt „IBONTO\"","price":"219,95 €","oldPrice":"","id":25},
+  {"category":"Bad","url":"https://www.otto.de/p/youyijia-schuessel-washbasin-tap-bathroom-sink-fittings-stainless-steel-kupfer-S0QC40Y0/","img":"https://i.otto.de/i/otto/5ab1579c-daec-45a9-bdbe-8d4188ea54e1/youyijia-schussel-washbasin-tap-bathroom-sink-fittings-stainless-steel-kupfer.jpg?$formatz$","noimg":"","badge":"","pick":"","name":"Youyijia Waschtischarmatur · Kupferoptik","price":"49,99 €","oldPrice":"67,87 €","id":26},
+  {"category":"Bad","url":"https://www.otto.de/p/joop-handtuch-selection-1711-handtuch-gemustert-beige-100-baumwolle-S0IF00LJ/","img":"https://i.otto.de/i/otto/787d39af-a4ef-59ce-ac04-01c35a2bc454/joop-handtuch-selection-1711-handtuch-gemustert-beige-100-baumwolle.jpg?$formatz$","noimg":"","badge":"ausverkauft","pick":"","name":"JOOP! Handtuch Selection 1711","price":"21,95 €","oldPrice":"","id":27},
+  {"category":"Arbeitszimmer, Haushalt, Renovierung","url":"https://amzn.eu/d/07WRe7CQ","img":"","noimg":"Kein Bild abrufbar (Amazon)","badge":"","pick":"","name":"dreame Z30 Akku-Staubsauger","price":"Preis offen","oldPrice":"","id":29},
+  {"category":"Arbeitszimmer, Haushalt, Renovierung","url":"https://www.sparfenster.de/dreh-kipp-fenster/2-scheiben-oben-offnend/","img":"","noimg":"Konfigurator, kein Produktbild","badge":"","pick":"","name":"Sparfenster Dreh-Kipp-Fenster","price":"ab 240,85 €","oldPrice":"","id":31},
+  {"category":"Arbeitszimmer, Haushalt, Renovierung","url":"https://www.otto.de/p/rituals-pflege-geschenkset-rituals-luxury-hair-care-collection-trial-set-5-tlg-ideales-set-fuer-die-haarpflege-unterwegs-S07G50PA/","img":"https://i.otto.de/i/otto/4b093044-0d33-570a-b22a-4266fbdb6bba/rituals-pflege-geschenkset-rituals-luxury-hair-care-collection-trial-set-5-tlg-ideales-set-fuer-die-haarpflege-unterwegs.jpg?$formatz$","noimg":"","badge":"","pick":"","name":"Rituals Hair Care Trial Set · 5-tlg","price":"72,90 €","oldPrice":"82,90 €","id":32},
+  {"category":"Arbeitszimmer, Haushalt, Renovierung","name":"TROTTEN Schreibtisch sitz/steh, weiß, 120x70 cm","url":"https://www.ikea.com/de/de/p/trotten-schreibtisch-sitz-steh-weiss-s99429578/","img":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKGBS7blzzS39NpWuxjdASMBawVBEYNzORm1e_xqeb8A&s=10","noimg":"","price":"129.00€","oldPrice":"","badge":"nur Online","pick":"","id":35},
+  {"category":"Schlafzimmer · Bett (4 Kandidaten)","name":"Livetastic SCHREIBTISCH 120/60/70-115 cm Weiß elektrisch höhenverstellbar","url":"https://www.xxxlutz.de/p/livetastic-schreibtisch-120-60-70-115-cm-weiss-elektrisch-hoehenverstellbar-000788010201","img":"https://media.xxxlutz.com/i/xxxlutz/PIap7YzmOK5DtK52dSxNzMHQ/?fmt=auto&%24hq%24=&w=1200","noimg":"","price":"89,90 €","oldPrice":"","badge":"","pick":"","id":37},
+  {"category":"Schlafzimmer · Bett (4 Kandidaten)","name":"ALEX Schubladenelement, weiß, 36x70 cm","url":"https://www.ikea.com/de/de/p/alex-schubladenelement-weiss-00473546/","img":"https://i.otto.de/i/otto/1b3fee32-cfea-50bc-ba2d-5bdce191c5b2/otto-home-kleiderschrank-trento-schlafzimmerschrank-garderobe-hochglanz-in-2-unterschiedlichen-schrankhoehen-waehlbar-schrank-mit-6-tueren-und-9-schubladen-hochglanz-fronten-2-0-m-hoehe-weiss.jpg?$formatz$","noimg":"","price":"79.99€","oldPrice":"","badge":"","pick":"","id":38},
+  {"category":"Zum Stöbern","url":"https://www.sklum.com/de/524-kaufen-mobel","img":"","noimg":"SKLUM Möbel-Übersicht","badge":"","pick":"","name":"SKLUM · alle Möbel","price":"Shop","oldPrice":"","id":33}
+];
 
-    let items = [];
-    const savedData = localStorage.getItem(storageKey);
-    if (savedData) {
-      try {
-        items = JSON.parse(savedData);
-      } catch(e) {
-        items = [...defaultItems];
-      }
+const urlParams = new URLSearchParams(window.location.search);
+const listId = urlParams.get('wg') || 'standard';
+
+if(listId !== 'standard'){
+  document.getElementById('pageHeading').textContent = `Wohnungsgalerie (${listId})`;
+  document.title = `Wohnungsgalerie – ${listId}`;
+}
+
+const STORAGE_ENDPOINT = `${DB_URL}/lists/${encodeURIComponent(listId)}.json`;
+
+let products = [];
+let nextId = 1;
+
+async function loadProducts(){
+  try {
+    const res = await fetch(STORAGE_ENDPOINT);
+    const data = await res.json();
+    if(data && Array.isArray(data) && data.length){
+      products = data.filter(Boolean);
+    } else if(listId === 'standard') {
+      // Wenn die Standard-Liste leer ist, mit den alten Daten initialisieren
+      products = SEED_PRODUCTS;
+      await saveProducts();
     } else {
-      items = [...defaultItems];
+      products = [];
     }
+  } catch(e) {
+    products = listId === 'standard' ? SEED_PRODUCTS : [];
+  }
+  nextId = products.reduce((m,p)=>Math.max(m,p.id||0),0) + 1;
+  render();
+}
 
-    function saveState() {
-      localStorage.setItem(storageKey, JSON.stringify(items));
+async function saveProducts(){
+  try {
+    await fetch(STORAGE_ENDPOINT, {
+      method: 'PUT',
+      body: JSON.stringify(products)
+    });
+  } catch(e) {
+    console.error('Cloud Sync fehlgeschlagen', e);
+  }
+}
+
+function updatePreview(url){
+  const preview = document.getElementById('modalImgPreview');
+  if(url && url.startsWith('http')){
+    preview.src = url;
+    preview.style.display = 'block';
+  } else {
+    preview.style.display = 'none';
+  }
+}
+
+function handleUrlPaste(e){
+  setTimeout(() => {
+    fetchProductData();
+  }, 100);
+}
+
+async function fetchProductData(){
+  const url = document.getElementById('f_url').value.trim();
+  if(!url || !url.startsWith('http')) return;
+  if(PROXY_URL.includes("DEINE_ID")){
+    return;
+  }
+
+  const btn = document.getElementById('btnAutoFetch');
+  btn.textContent = '⏳ Lädt...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(`${PROXY_URL}?url=${encodeURIComponent(url)}`);
+    const data = await res.json();
+    
+    if(data.title && !document.getElementById('f_name').value){
+      document.getElementById('f_name').value = data.title;
     }
-
-    function formatEuro(num) {
-      return num.toLocaleString("de-DE", { style: "currency", currency: "EUR" });
+    if(data.image && !document.getElementById('f_img').value){
+      document.getElementById('f_img').value = data.image;
+      updatePreview(data.image);
     }
-
-    function renderCatalog() {
-      const catalog = document.getElementById("catalog");
-      catalog.innerHTML = "";
-
-      const categories = [...new Set(items.map(i => i.category))];
-
-      categories.forEach(cat => {
-        const catItems = items.filter(i => i.category === cat);
-        const catSelected = catItems.filter(i => i.selected);
-        const catTotal = catSelected.reduce((sum, i) => sum + i.price, 0);
-
-        const section = document.createElement("section");
-        section.className = "category-section";
-
-        section.innerHTML = `
-          <div class="category-header">
-            <h2 class="category-title">${cat}</h2>
-            <div class="category-stats">
-              <span>${catItems.length} Produkte</span>
-              <span>Ausgewählt: <strong>${formatEuro(catTotal)}</strong></span>
-            </div>
-          </div>
-          <div class="grid"></div>
-        `;
-
-        catalog.appendChild(section);
-
-        const grid = section.querySelector(".grid");
-        catItems.forEach(item => {
-          const card = document.createElement("div");
-          card.className = `card ${item.selected ? "selected" : ""}`;
-          
-          const targetUrl = item.url || "#";
-          const hasUrl = Boolean(item.url);
-
-          card.innerHTML = `
-            <div class="card-img-wrap" onclick="${hasUrl ? `window.open('${item.url}', '_blank')` : ''}">
-              <img src="${item.img || 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500'}" alt="${item.title}" loading="lazy">
-              <button class="fav-btn ${item.favorite ? "active" : ""}" title="Favorit umschalten" onclick="event.stopPropagation(); toggleFav(${item.id})">
-                ★
-              </button>
-            </div>
-            <div class="card-content">
-              ${hasUrl 
-                ? `<a href="${item.url}" target="_blank" rel="noopener" class="card-title">${item.title} ↗</a>` 
-                : `<div class="card-title">${item.title}</div>`}
-              <div class="card-desc">${item.desc || ''}</div>
-              
-              <div class="card-actions-row">
-                ${hasUrl ? `<a href="${item.url}" target="_blank" rel="noopener" class="shop-link">🔗 Zum Online-Shop</a>` : '<span></span>'}
-              </div>
-
-              <div class="card-footer">
-                <span class="card-price">${formatEuro(item.price)}</span>
-                <label class="select-toggle">
-                  <input type="checkbox" ${item.selected ? "checked" : ""} onchange="toggleSelect(${item.id})">
-                  Ausgewählt
-                </label>
-              </div>
-            </div>
-          `;
-          grid.appendChild(card);
-        });
-      });
-
-      renderSummary();
+    if(data.price && !document.getElementById('f_price').value){
+      document.getElementById('f_price').value = data.price;
     }
+  } catch(err) {
+    console.error("Scraping-Fehler", err);
+  } finally {
+    btn.textContent = '✨ Abrufen';
+    btn.disabled = false;
+  }
+}
 
-    function toggleSelect(id) {
-      const item = items.find(i => i.id === id);
-      if (item) {
-        item.selected = !item.selected;
-        saveState();
-        renderCatalog();
+function escapeHtml(str){
+  if(!str) return '';
+  return str.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function render(){
+  const content = document.getElementById('content');
+  if(products.length === 0){
+    content.innerHTML = '<p class="empty">Noch keine Produkte in dieser Liste. Klicke oben auf "+ Produkt hinzufügen".</p>';
+    document.getElementById('footer').textContent = '';
+    return;
+  }
+  const categories = [];
+  for(const p of products){
+    if(p.category && !categories.includes(p.category)) categories.push(p.category);
+  }
+  let html = '';
+  for(const cat of categories){
+    const items = products.filter(p => p.category === cat);
+    html += `<h2>
+      <span class="cat-title-wrap">
+        <span>${escapeHtml(cat)}</span>
+        <button class="cat-edit-btn" onclick="renameCategory('${escapeHtml(cat)}')" title="Kategorie umbenennen">✏️</button>
+      </span>
+      <span class="count">${items.length} ${items.length===1?'Produkt':'Produkte'}</span>
+    </h2>`;
+    html += '<div class="grid">';
+    for(const p of items){
+      html += '<div class="cardwrap">';
+      html += `<div class="card" onclick="openEditModal(${p.id})">`;
+      html += '<div class="thumb">';
+      if(p.badge) html += `<span class="badge">${escapeHtml(p.badge)}</span>`;
+      if(p.pick) html += `<span class="pick">${escapeHtml(p.pick)}</span>`;
+      if(p.img){
+        html += `<img loading="lazy" src="${escapeHtml(p.img)}" alt="">`;
+      } else {
+        html += `<div class="noimg">${escapeHtml(p.noimg || 'Kein Bild hinterlegt')}</div>`;
       }
+      html += '</div>';
+      html += '<div class="meta">';
+      html += `<span class="name">${escapeHtml(p.name)}</span>`;
+      html += `<span class="price">${escapeHtml(p.price)}`;
+      if(p.oldPrice) html += `<small>${escapeHtml(p.oldPrice)}</small>`;
+      html += '</span></div></div></div>';
     }
+    html += '</div>';
+  }
+  content.innerHTML = html;
+  document.getElementById('footer').textContent =
+    `${products.length} Produkte in ${categories.length} Kategorien.`;
+}
 
-    function toggleFav(id) {
-      const item = items.find(i => i.id === id);
-      if (item) {
-        item.favorite = !item.favorite;
-        saveState();
-        renderCatalog();
-      }
+async function renameCategory(oldName){
+  const newName = prompt(`Kategorie "${oldName}" umbenennen in:`, oldName);
+  if(!newName || newName.trim() === '' || newName.trim() === oldName) return;
+
+  const trimmed = newName.trim();
+  products = products.map(p => {
+    if(p.category === oldName){
+      return { ...p, category: trimmed };
     }
+    return p;
+  });
 
-    function renderSummary() {
-      const selectedItems = items.filter(i => i.selected);
-      const total = selectedItems.reduce((sum, i) => sum + i.price, 0);
+  render();
+  await saveProducts();
+}
 
-      document.getElementById("cart-badge").innerText = selectedItems.length;
-      document.getElementById("cart-btn-total").innerText = formatEuro(total);
-      document.getElementById("drawer-total").innerText = formatEuro(total);
+function populateCategorySelect(selectedCategory = ''){
+  const sel = document.getElementById('f_category');
+  const categories = [];
+  for(const p of products){
+    if(p.category && !categories.includes(p.category)) categories.push(p.category);
+  }
+  sel.innerHTML = '';
+  for(const c of categories){
+    const opt = document.createElement('option');
+    opt.value = c; 
+    opt.textContent = c;
+    if(c === selectedCategory) opt.selected = true;
+    sel.appendChild(opt);
+  }
+  const newOpt = document.createElement('option');
+  newOpt.value = '__new__'; 
+  newOpt.textContent = '+ Neue Kategorie erstellen...';
+  sel.appendChild(newOpt);
+  
+  sel.onchange = () => {
+    document.getElementById('newCatField').style.display = sel.value === '__new__' ? 'block' : 'none';
+  };
+}
 
-      const drawerList = document.getElementById("drawer-items");
-      if (selectedItems.length === 0) {
-        drawerList.innerHTML = `<div style="color:var(--muted); text-align:center; margin-top:40px;">Noch keine Produkte ausgewählt.</div>`;
-        return;
-      }
+function openAddModal(){
+  populateCategorySelect();
+  document.getElementById('productForm').reset();
+  document.getElementById('f_id').value = '';
+  document.getElementById('modalTitle').textContent = 'Neues Produkt hinzufügen';
+  document.getElementById('btnSubmit').textContent = 'Hinzufügen';
+  document.getElementById('btnDelete').style.display = 'none';
+  document.getElementById('btnShopLink').style.display = 'none';
+  document.getElementById('modalImgPreview').style.display = 'none';
+  document.getElementById('newCatField').style.display = 'none';
+  document.getElementById('overlay').classList.add('open');
+}
 
-      drawerList.innerHTML = selectedItems.map(item => `
-        <div class="drawer-item">
-          <div>
-            ${item.url 
-              ? `<a href="${item.url}" target="_blank" rel="noopener" class="drawer-item-title">${item.favorite ? '★ ' : ''}${item.title} ↗</a>` 
-              : `<div class="drawer-item-title">${item.favorite ? '★ ' : ''}${item.title}</div>`}
-            <div class="drawer-item-cat">${item.category}</div>
-          </div>
-          <div class="drawer-item-price">${formatEuro(item.price)}</div>
-        </div>
-      `).join("");
+function openEditModal(id){
+  const p = products.find(item => item.id === id);
+  if(!p) return;
+  populateCategorySelect(p.category);
+  document.getElementById('productForm').reset();
+  document.getElementById('f_id').value = p.id;
+  document.getElementById('modalTitle').textContent = 'Produkt bearbeiten';
+  document.getElementById('btnSubmit').textContent = 'Speichern';
+  document.getElementById('btnDelete').style.display = 'inline-flex';
+  
+  const shopBtn = document.getElementById('btnShopLink');
+  shopBtn.style.display = 'inline-flex';
+  shopBtn.href = p.url;
+
+  updatePreview(p.img);
+
+  document.getElementById('f_name').value = p.name || '';
+  document.getElementById('f_url').value = p.url || '';
+  document.getElementById('f_img').value = p.img || '';
+  document.getElementById('f_price').value = p.price || '';
+  document.getElementById('f_oldPrice').value = p.oldPrice || '';
+  document.getElementById('f_badge').value = p.badge || '';
+  document.getElementById('f_pick').value = p.pick || '';
+  document.getElementById('newCatField').style.display = 'none';
+
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeModal(){
+  document.getElementById('overlay').classList.remove('open');
+}
+
+document.getElementById('overlay').addEventListener('click', (e) => {
+  if(e.target.id === 'overlay') closeModal();
+});
+
+document.getElementById('productForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const catSel = document.getElementById('f_category').value;
+  const category = catSel === '__new__'
+    ? (document.getElementById('f_newCategory').value.trim() || 'Sonstiges')
+    : catSel;
+  const idVal = document.getElementById('f_id').value;
+
+  const productData = {
+    category,
+    name: document.getElementById('f_name').value.trim(),
+    url: document.getElementById('f_url').value.trim(),
+    img: document.getElementById('f_img').value.trim(),
+    noimg: '',
+    price: document.getElementById('f_price').value.trim(),
+    oldPrice: document.getElementById('f_oldPrice').value.trim(),
+    badge: document.getElementById('f_badge').value.trim(),
+    pick: document.getElementById('f_pick').value.trim(),
+  };
+
+  if(idVal){
+    const idx = products.findIndex(p => p.id === parseInt(idVal, 10));
+    if(idx !== -1){
+      products[idx] = { ...products[idx], ...productData };
     }
+  } else {
+    productData.id = nextId++;
+    products.push(productData);
+  }
 
-    function toggleDrawer() {
-      document.getElementById("drawer").classList.toggle("open");
-      document.getElementById("drawer-overlay").classList.toggle("open");
-    }
+  render();
+  closeModal();
+  await saveProducts();
+});
 
-    function openAddModal() {
-      document.getElementById("add-modal").classList.add("open");
-    }
+async function deleteCurrentProduct(){
+  const idVal = document.getElementById('f_id').value;
+  if(!idVal) return;
+  if(!confirm('Dieses Produkt wirklich entfernen?')) return;
+  products = products.filter(p => p.id !== parseInt(idVal, 10));
+  render();
+  closeModal();
+  await saveProducts();
+}
 
-    function closeAddModal(e) {
-      document.getElementById("add-modal").classList.remove("open");
-      document.getElementById("add-product-form").reset();
-    }
-
-    function handleAddProduct(e) {
-      e.preventDefault();
-      const title = document.getElementById("p-title").value.trim();
-      const category = document.getElementById("p-category").value.trim();
-      const price = parseFloat(document.getElementById("p-price").value) || 0;
-      const url = document.getElementById("p-url").value.trim();
-      const img = document.getElementById("p-img").value.trim() || "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500";
-      const desc = document.getElementById("p-desc").value.trim();
-
-      const newItem = {
-        id: Date.now(),
-        title,
-        category,
-        price,
-        url,
-        img,
-        desc,
-        selected: true,
-        favorite: false
-      };
-
-      items.push(newItem);
-      saveState();
-      closeAddModal();
-      renderCatalog();
-    }
-
-    if (currentUser !== 'standard') {
-      const sub = document.getElementById('user-sub');
-      if (sub) {
-        sub.innerHTML = `Profil von <strong>${currentUser.toUpperCase()}</strong> – Produkte ansehen, Links öffnen und Budget planen`;
-      }
-    }
-
-    renderCatalog();
-  </script>
+loadProducts();
+</script>
 </body>
 </html>
