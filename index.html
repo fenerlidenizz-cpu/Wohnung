@@ -1,40 +1,586 @@
-<script>
-    // Benutzer aus der URL auslesen (?user=name)
-    const urlParams = new URLSearchParams(window.location.search);
-    const currentUser = urlParams.get('user') || 'standard';
-    const storageKey = `wohnung_items_state_${currentUser}`;
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Unsere Wohnung 🛋️ Galerie & Budget</title>
+  <style>
+    :root {
+      --bg: #faf9f7;
+      --card: #ffffff;
+      --ink: #1c1b1f;
+      --muted: #6f6e77;
+      --line: #e6e2dc;
+      --accent: #7d6a55;
+      --accent-hover: #655442;
+      --accent-light: #f1ece4;
+      --fav: #e5a11c;
+      --warn: #a84242;
+      --shadow: 0 8px 24px rgba(0,0,0,0.06);
+      --radius: 14px;
+    }
 
-    // Datenbasis
-    const items = [
-      { id: 1, category: "Wohnzimmer", title: "SÖDERHAMN 3er-Sofa", desc: "Fridtuna hellbeige, gemütlich und modular", price: 549.00, img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500", selected: true, favorite: true },
-      { id: 2, category: "Wohnzimmer", title: "Couchtisch BORGEBY", desc: "Birkenfurnier, 70 cm rund mit Ablage", price: 89.99, img: "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=500", selected: true, favorite: false },
-      { id: 3, category: "Wohnzimmer", title: "TV-Bank BESTÅ", desc: "Weiß mit Türen, 180x42x64 cm", price: 195.00, img: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=500", selected: false, favorite: true },
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #161513;
+        --card: #201f1c;
+        --ink: #f1ece4;
+        --muted: #a09d98;
+        --line: #332f2a;
+        --accent: #c4a882;
+        --accent-hover: #d8be99;
+        --accent-light: #2c2720;
+        --fav: #f5b73d;
+        --warn: #e06c6c;
+        --shadow: 0 8px 24px rgba(0,0,0,0.4);
+      }
+    }
 
-      { id: 4, category: "Küche & Essbereich", title: "Esstisch LISABO", desc: "Eschenfurnier, 140x78 cm", price: 179.00, img: "https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf?w=500", selected: true, favorite: true },
-      { id: 5, category: "Küche & Essbereich", title: "Stühle INGOLF (4er-Set)", desc: "Massivholz weiß gebeizt", price: 260.00, img: "https://images.unsplash.com/photo-1503602642458-232111445657?w=500", selected: true, favorite: false },
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-      { id: 6, category: "Schlafzimmer", title: "MALM Bettgestell", desc: "180x200 cm mit 4 Schubladen", price: 299.00, img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=500", selected: true, favorite: true },
-      { id: 7, category: "Schlafzimmer", title: "PAX Kleiderschrank", desc: "200x236 cm mit Schiebetüren", price: 620.00, img: "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=500", selected: true, favorite: false }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 24px 20px 80px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 36px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow);
+      transition: background 0.2s, transform 0.1s;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--card);
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+
+    .btn-secondary:hover {
+      background: var(--accent-light);
+    }
+
+    .cart-badge {
+      background: #ffffff;
+      color: var(--accent);
+      border-radius: 50%;
+      padding: 2px 7px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .category-section {
+      margin-bottom: 40px;
+    }
+
+    .category-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--line);
+    }
+
+    .category-title {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .category-stats {
+      font-size: 14px;
+      color: var(--muted);
+      display: flex;
+      gap: 12px;
+    }
+
+    .category-stats strong {
+      color: var(--ink);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+    }
+
+    .card.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .card-img-wrap {
+      width: 100%;
+      height: 190px;
+      background: var(--line);
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .card-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .fav-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(4px);
+      border: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      color: #fff;
+      transition: transform 0.15s, background 0.15s;
+      z-index: 2;
+    }
+
+    .fav-btn:hover {
+      transform: scale(1.15);
+    }
+
+    .fav-btn.active {
+      background: #ffffff;
+      color: var(--fav);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .card-content {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--ink);
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .card-title:hover {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    .card-desc {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 12px;
+      flex-grow: 1;
+    }
+
+    .card-actions-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .shop-link {
+      font-size: 12px;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .shop-link:hover {
+      text-decoration: underline;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+    }
+
+    .card-price {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .select-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .select-toggle input {
+      accent-color: var(--accent);
+      cursor: pointer;
+      width: 16px;
+      height: 16px;
+    }
+
+    /* DRAWER */
+    .drawer-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(2px);
+      z-index: 900;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .drawer-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0; right: -420px;
+      width: 100%; max-width: 400px; height: 100%;
+      background: var(--card);
+      box-shadow: -4px 0 24px rgba(0,0,0,0.15);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .drawer.open { right: 0; }
+
+    .drawer-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .drawer-header h2 { font-size: 18px; font-weight: 600; }
+
+    .close-btn {
+      background: none; border: none; font-size: 20px;
+      cursor: pointer; color: var(--muted); padding: 4px;
+    }
+
+    .drawer-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .drawer-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      background: var(--bg);
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .drawer-item-title { font-weight: 600; text-decoration: none; color: var(--ink); }
+    .drawer-item-title:hover { text-decoration: underline; color: var(--accent); }
+    .drawer-item-cat { font-size: 11px; color: var(--muted); }
+    .drawer-item-price { font-weight: 700; white-space: nowrap; margin-left: 12px; }
+
+    .drawer-footer {
+      padding: 20px;
+      border-top: 1px solid var(--line);
+      background: var(--bg);
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    /* MODAL (PRODUKT HINZUFÜGEN) */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(3px);
+      z-index: 1100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--card);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 480px;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .form-group input, .form-group select, .form-group textarea {
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 14px;
+      background: var(--bg);
+      color: var(--ink);
+      outline: none;
+    }
+
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .modal-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      background: var(--bg);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div>
+        <h1>Unsere Wohnung 🛋️ Galerie</h1>
+        <div class="sub" id="user-sub">Produkte vergleichen, Favoriten markieren und Gesamtkosten planen</div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-secondary" onclick="openAddModal()">＋ Produkt hinzufügen</button>
+        <button class="btn" onclick="toggleDrawer()">
+          🛒 Übersicht
+          <span class="cart-badge" id="cart-badge">0</span>
+          <span id="cart-btn-total">0,00 €</span>
+        </button>
+      </div>
+    </header>
+
+    <div id="catalog"></div>
+  </div>
+
+  <!-- DRAWER -->
+  <div class="drawer-overlay" id="drawer-overlay" onclick="toggleDrawer()"></div>
+  <div class="drawer" id="drawer">
+    <div class="drawer-header">
+      <h2>Ausgewählte Produkte</h2>
+      <button class="close-btn" onclick="toggleDrawer()">✕</button>
+    </div>
+    <div class="drawer-body" id="drawer-items"></div>
+    <div class="drawer-footer">
+      <div class="total-row">
+        <span>Gesamtsumme:</span>
+        <span id="drawer-total">0,00 €</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PRODUKT HINZUFÜGEN -->
+  <div class="modal-overlay" id="add-modal" onclick="closeAddModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Neues Produkt hinzufügen</h3>
+        <button class="close-btn" onclick="closeAddModal()">✕</button>
+      </div>
+      <form id="add-product-form" onsubmit="handleAddProduct(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Produktname *</label>
+            <input type="text" id="p-title" placeholder="z. B. IKEA Strandmon Sessel" required>
+          </div>
+          <div class="form-group">
+            <label>Kategorie / Raum *</label>
+            <input type="text" id="p-category" placeholder="z. B. Wohnzimmer, Flur, Küche" list="cat-suggestions" required>
+            <datalist id="cat-suggestions">
+              <option value="Wohnzimmer">
+              <option value="Küche & Essbereich">
+              <option value="Schlafzimmer">
+              <option value="Flur">
+              <option value="Badezimmer">
+              <option value="Balkon">
+            </datalist>
+          </div>
+          <div class="form-group">
+            <label>Preis in € *</label>
+            <input type="number" id="p-price" step="0.01" min="0" placeholder="199.99" required>
+          </div>
+          <div class="form-group">
+            <label>Produktlink / Shop-URL</label>
+            <input type="url" id="p-url" placeholder="https://www.ikea.com/...">
+          </div>
+          <div class="form-group">
+            <label>Bild-URL</label>
+            <input type="url" id="p-img" placeholder="https://...">
+          </div>
+          <div class="form-group">
+            <label>Beschreibung</label>
+            <textarea id="p-desc" rows="2" placeholder="Farbe, Maße, Details..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeAddModal()">Abbrechen</button>
+          <button type="submit" class="btn">Hinzufügen</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const defaultItems = [
+      { id: 1, category: "Wohnzimmer", title: "SÖDERHAMN 3er-Sofa", desc: "Fridtuna hellbeige, gemütlich und modular", price: 549.00, img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500", url: "https://www.ikea.com/de/de/p/soederhamn-3er-sofa-fridtuna-hellbeige-s09449618/", selected: true, favorite: true },
+      { id: 2, category: "Wohnzimmer", title: "Couchtisch BORGEBY", desc: "Birkenfurnier, 70 cm rund mit Ablage", price: 89.99, img: "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=500", url: "https://www.ikea.com/de/de/p/borgeby-couchtisch-birkenfurnier-70389881/", selected: true, favorite: false },
+      { id: 3, category: "Wohnzimmer", title: "TV-Bank BESTÅ", desc: "Weiß mit Türen, 180x42x64 cm", price: 195.00, img: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=500", url: "https://www.ikea.com/de/de/cat/besta-system-46053/", selected: false, favorite: true },
+      { id: 4, category: "Küche & Essbereich", title: "Esstisch LISABO", desc: "Eschenfurnier, 140x78 cm", price: 179.00, img: "https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf?w=500", url: "https://www.ikea.com/de/de/p/lisabo-tisch-eschenfurnier-70294339/", selected: true, favorite: true },
+      { id: 5, category: "Küche & Essbereich", title: "Stühle INGOLF (4er-Set)", desc: "Massivholz weiß gebeizt", price: 260.00, img: "https://images.unsplash.com/photo-1503602642458-232111445657?w=500", url: "https://www.ikea.com/de/de/p/ingolf-stuhl-weiss-70103250/", selected: true, favorite: false },
+      { id: 6, category: "Schlafzimmer", title: "MALM Bettgestell", desc: "180x200 cm mit 4 Schubladen", price: 299.00, img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=500", url: "https://www.ikea.com/de/de/p/malm-bettgestell-hoch-mit-4-schubladen-weiss-s29006978/", selected: true, favorite: true },
+      { id: 7, category: "Schlafzimmer", title: "PAX Kleiderschrank", desc: "200x236 cm mit Schiebetüren", price: 620.00, img: "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=500", url: "https://www.ikea.com/de/de/cat/pax-system-19086/", selected: true, favorite: false }
     ];
 
-    // Benutzerspezifischen Stand laden
-    const saved = localStorage.getItem(storageKey);
-    if (saved) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentUser = urlParams.get('user') || 'standard';
+    const storageKey = `wohnung_items_data_${currentUser}`;
+
+    let items = [];
+    const savedData = localStorage.getItem(storageKey);
+    if (savedData) {
       try {
-        const parsed = JSON.parse(saved);
-        items.forEach(it => {
-          if (parsed[it.id]) {
-            it.selected = parsed[it.id].selected;
-            it.favorite = parsed[it.id].favorite;
-          }
-        });
-      } catch (e) {}
+        items = JSON.parse(savedData);
+      } catch(e) {
+        items = [...defaultItems];
+      }
+    } else {
+      items = [...defaultItems];
     }
 
     function saveState() {
-      const state = {};
-      items.forEach(it => state[it.id] = { selected: it.selected, favorite: it.favorite });
-      localStorage.setItem(storageKey, JSON.stringify(state));
+      localStorage.setItem(storageKey, JSON.stringify(items));
     }
 
     function formatEuro(num) {
@@ -72,16 +618,27 @@
         catItems.forEach(item => {
           const card = document.createElement("div");
           card.className = `card ${item.selected ? "selected" : ""}`;
+          
+          const targetUrl = item.url || "#";
+          const hasUrl = Boolean(item.url);
+
           card.innerHTML = `
-            <div class="card-img-wrap">
-              <img src="${item.img}" alt="${item.title}" loading="lazy">
-              <button class="fav-btn ${item.favorite ? "active" : ""}" title="Favorit umschalten" onclick="toggleFav(${item.id})">
+            <div class="card-img-wrap" onclick="${hasUrl ? `window.open('${item.url}', '_blank')` : ''}">
+              <img src="${item.img || 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500'}" alt="${item.title}" loading="lazy">
+              <button class="fav-btn ${item.favorite ? "active" : ""}" title="Favorit umschalten" onclick="event.stopPropagation(); toggleFav(${item.id})">
                 ★
               </button>
             </div>
             <div class="card-content">
-              <div class="card-title">${item.title}</div>
-              <div class="card-desc">${item.desc}</div>
+              ${hasUrl 
+                ? `<a href="${item.url}" target="_blank" rel="noopener" class="card-title">${item.title} ↗</a>` 
+                : `<div class="card-title">${item.title}</div>`}
+              <div class="card-desc">${item.desc || ''}</div>
+              
+              <div class="card-actions-row">
+                ${hasUrl ? `<a href="${item.url}" target="_blank" rel="noopener" class="shop-link">🔗 Zum Online-Shop</a>` : '<span></span>'}
+              </div>
+
               <div class="card-footer">
                 <span class="card-price">${formatEuro(item.price)}</span>
                 <label class="select-toggle">
@@ -133,7 +690,9 @@
       drawerList.innerHTML = selectedItems.map(item => `
         <div class="drawer-item">
           <div>
-            <div class="drawer-item-title">${item.favorite ? '★ ' : ''}${item.title}</div>
+            ${item.url 
+              ? `<a href="${item.url}" target="_blank" rel="noopener" class="drawer-item-title">${item.favorite ? '★ ' : ''}${item.title} ↗</a>` 
+              : `<div class="drawer-item-title">${item.favorite ? '★ ' : ''}${item.title}</div>`}
             <div class="drawer-item-cat">${item.category}</div>
           </div>
           <div class="drawer-item-price">${formatEuro(item.price)}</div>
@@ -146,13 +705,50 @@
       document.getElementById("drawer-overlay").classList.toggle("open");
     }
 
-    // Zeige im Untertitel an, welches Profil aktiv ist
+    function openAddModal() {
+      document.getElementById("add-modal").classList.add("open");
+    }
+
+    function closeAddModal(e) {
+      document.getElementById("add-modal").classList.remove("open");
+      document.getElementById("add-product-form").reset();
+    }
+
+    function handleAddProduct(e) {
+      e.preventDefault();
+      const title = document.getElementById("p-title").value.trim();
+      const category = document.getElementById("p-category").value.trim();
+      const price = parseFloat(document.getElementById("p-price").value) || 0;
+      const url = document.getElementById("p-url").value.trim();
+      const img = document.getElementById("p-img").value.trim() || "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500";
+      const desc = document.getElementById("p-desc").value.trim();
+
+      const newItem = {
+        id: Date.now(),
+        title,
+        category,
+        price,
+        url,
+        img,
+        desc,
+        selected: true,
+        favorite: false
+      };
+
+      items.push(newItem);
+      saveState();
+      closeAddModal();
+      renderCatalog();
+    }
+
     if (currentUser !== 'standard') {
-      const sub = document.querySelector('.sub');
+      const sub = document.getElementById('user-sub');
       if (sub) {
-        sub.innerHTML = `Profil von <strong>${currentUser.toUpperCase()}</strong> – Produkte vergleichen, Favoriten wählen und Budget planen`;
+        sub.innerHTML = `Profil von <strong>${currentUser.toUpperCase()}</strong> – Produkte ansehen, Links öffnen und Budget planen`;
       }
     }
 
     renderCatalog();
   </script>
+</body>
+</html>
