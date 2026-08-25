@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Unsere Wohnung – Galerie</title>
+<title>Wohnungsgalerie</title>
 <style>
   :root{
     --bg:#faf9f7; --card:#ffffff; --ink:#1c1b19; --muted:#78736c;
@@ -125,7 +125,7 @@
 
 <header>
   <div>
-    <h1>Unsere Wohnung – Galerie</h1>
+    <h1 id="pageHeading">Unsere Wohnung – Galerie</h1>
     <p class="sub">Live synchronisiert. Alle Änderungen sind sofort auf allen Geräten sichtbar.</p>
   </div>
   <div class="btn-bar">
@@ -158,7 +158,7 @@
       </div>
       <div class="field" id="newCatField" style="display:none">
         <label>Name der neuen Kategorie</label>
-        <input type="text" id="f_newCategory" placeholder="z. B. Balkon">
+        <input type="text" id="f_newCategory" placeholder="z. B. Wohnzimmer, Schlafzimmer">
       </div>
 
       <div class="field">
@@ -188,7 +188,7 @@
         </div>
         <div class="field">
           <label>Label (optional)</label>
-          <input type="text" id="f_pick" placeholder="z. B. günstigster">
+          <input type="text" id="f_pick" placeholder="z. B. Favorit">
         </div>
       </div>
 
@@ -208,28 +208,41 @@
 
 <script>
 const DB_URL = "https://wohnung-einrichtung-default-rtdb.firebaseio.com";
+const PROXY_URL = "https://script.google.com/macros/s/AKfycbyWqG-kLwHZZ_wA7l1fA3o-eYqYl_DEINE_ID/exec"; // Falls du deine Web-App URL hast, hier einsetzen
 
-// >>> HIER DEINE GOOGLE APPS SCRIPT URL EINFÜGEN <<<
-const PROXY_URL = "https://script.google.com/macros/s/AKfycbwgOVhf0AAWYD4Nsj7dUHrgTXTWkYnjWiDjaiNw22xZupQYbAu5tnyxB9ZnkOQp9eWJmA/exec";
+// Ermittelt den Wg-Schlüssel aus der URL (z.B. ?wg=meine-wohnung)
+const urlParams = new URLSearchParams(window.location.search);
+const listId = urlParams.get('wg') || 'standard';
+
+if(listId !== 'standard'){
+  document.getElementById('pageHeading').textContent = `Wohnungsgalerie (${listId})`;
+  document.title = `Wohnungsgalerie – ${listId}`;
+}
+
+const STORAGE_ENDPOINT = `${DB_URL}/lists/${encodeURIComponent(listId)}.json`;
 
 let products = [];
 let nextId = 1;
 
 async function loadProducts(){
   try {
-    const res = await fetch(`${DB_URL}/products.json`);
+    const res = await fetch(STORAGE_ENDPOINT);
     const data = await res.json();
     if(data && Array.isArray(data) && data.length){
       products = data.filter(Boolean);
+    } else {
+      products = [];
     }
-  } catch(e) {}
+  } catch(e) {
+    products = [];
+  }
   nextId = products.reduce((m,p)=>Math.max(m,p.id||0),0) + 1;
   render();
 }
 
 async function saveProducts(){
   try {
-    await fetch(`${DB_URL}/products.json`, {
+    await fetch(STORAGE_ENDPOINT, {
       method: 'PUT',
       body: JSON.stringify(products)
     });
@@ -257,8 +270,7 @@ function handleUrlPaste(e){
 async function fetchProductData(){
   const url = document.getElementById('f_url').value.trim();
   if(!url || !url.startsWith('http')) return;
-  if(PROXY_URL.includes("DEINE-DEPLOYMENT-ID")){
-    alert("Bitte hinterlege zuerst die Google Apps Script URL im Code!");
+  if(PROXY_URL.includes("DEINE_ID")){
     return;
   }
 
@@ -296,7 +308,7 @@ function escapeHtml(str){
 function render(){
   const content = document.getElementById('content');
   if(products.length === 0){
-    content.innerHTML = '<p class="empty">Noch keine Produkte vorhanden.</p>';
+    content.innerHTML = '<p class="empty">Noch keine Produkte in dieser Liste. Klicke oben auf "+ Produkt hinzufügen".</p>';
     document.getElementById('footer').textContent = '';
     return;
   }
