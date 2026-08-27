@@ -578,14 +578,10 @@ function handleUrlPaste(e){
   setTimeout(() => { fetchProductData(); }, 150);
 }
 
-// Direkte Scraping-Logik wie zu Beginn
 async function fetchProductData(){
   const url = document.getElementById('f_url').value.trim();
   if(!url || !url.startsWith('http')) return;
-  if(PROXY_URL.includes("DEINE_ID")) {
-    console.warn("Bitte trage deine Google Apps Script Deployment-URL in PROXY_URL ein.");
-    return;
-  }
+  if(PROXY_URL.includes("DEINE_ID")) return;
 
   const btn = document.getElementById('btnAutoFetch');
   btn.textContent = '⏳ Lädt...';
@@ -629,12 +625,13 @@ function render(){
 
   const categories = [];
   for(const p of products){
-    if(p.category && !categories.includes(p.category)) categories.push(p.category);
+    const catName = (p.category || 'Sonstiges').trim();
+    if(catName && !categories.includes(catName)) categories.push(catName);
   }
 
   let html = '';
   for(const cat of categories){
-    const items = products.filter(p => p.category === cat);
+    const items = products.filter(p => (p.category || 'Sonstiges').trim() === cat);
     
     let catSelectedTotal = 0;
     items.forEach(p => {
@@ -793,7 +790,7 @@ async function renameCategory(oldName){
 
   const trimmed = newName.trim();
   products = products.map(p => {
-    if(p.category === oldName){
+    if((p.category || 'Sonstiges').trim() === oldName){
       return { ...p, category: trimmed };
     }
     return p;
@@ -807,24 +804,36 @@ function populateCategorySelect(selectedCategory = ''){
   const sel = document.getElementById('f_category');
   const categories = [];
   for(const p of products){
-    if(p.category && !categories.includes(p.category)) categories.push(p.category);
+    const catName = (p.category || 'Sonstiges').trim();
+    if(catName && !categories.includes(catName)) categories.push(catName);
   }
+  
+  // Falls die übergebene Kategorie noch nicht in der Liste vorkommt (z. B. einzelnes Produkt)
+  const cleanSelected = (selectedCategory || '').trim();
+  if(cleanSelected && !categories.includes(cleanSelected)){
+    categories.unshift(cleanSelected);
+  }
+
   sel.innerHTML = '';
   
+  // Standard-Platzhalter (erzwingt Auswahl beim Erstellen)
   const placeholderOpt = document.createElement('option');
   placeholderOpt.value = '';
   placeholderOpt.textContent = '-- Bitte Kategorie wählen --';
   placeholderOpt.disabled = true;
-  if (!selectedCategory) placeholderOpt.selected = true;
+  if (!cleanSelected) placeholderOpt.selected = true;
   sel.appendChild(placeholderOpt);
 
   for(const c of categories){
     const opt = document.createElement('option');
     opt.value = c; 
     opt.textContent = c;
-    if(c === selectedCategory) opt.selected = true;
+    if(cleanSelected && c.toLowerCase() === cleanSelected.toLowerCase()) {
+      opt.selected = true;
+    }
     sel.appendChild(opt);
   }
+  
   const newOpt = document.createElement('option');
   newOpt.value = '__new__'; 
   newOpt.textContent = '+ Neue Kategorie erstellen...';
@@ -841,7 +850,7 @@ function populateCategorySelect(selectedCategory = ''){
 
 function openAddModal(){
   isModalOpen = true;
-  populateCategorySelect('');
+  populateCategorySelect(''); // Startet leer und verlangt Auswahl
   document.getElementById('productForm').reset();
   document.getElementById('f_id').value = '';
   document.getElementById('f_bought').checked = false;
@@ -859,7 +868,7 @@ function openEditModal(id){
   const p = products.find(item => item.id === id);
   if(!p) return;
   isModalOpen = true;
-  populateCategorySelect(p.category);
+  populateCategorySelect(p.category || '');
   document.getElementById('productForm').reset();
   document.getElementById('f_id').value = p.id;
   document.getElementById('f_bought').checked = Boolean(p.bought);
@@ -931,7 +940,6 @@ document.getElementById('productForm').addEventListener('submit', async (e) => {
   } else {
     productData.id = nextId++;
     products.push(productData);
-    // Standardmäßig NICHT ausgewählt
     if(!userState[productData.id]) userState[productData.id] = { selected: false, favorite: false };
     saveUserState();
   }
