@@ -5,17 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Unsere Wohnung – Galerie</title>
 
+<!-- PWA & Mobile Web App Meta-Tags -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#7d6a55">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="icon" type="image/png" href="https://img.icons8.com/isometric-line/512/armchair.png">
-<link rel="apple-touch-icon" href="https://img.icons8.com/isometric-line/512/armchair.png">
+<link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/2590/2590525.png">
+<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2590/2590525.png">
 
+<!-- Social Media & Link-Vorschau -->
 <meta property="og:title" content="Unsere Wohnung – Galerie">
 <meta property="og:description" content="Möbel, Favoriten & Budget-Planung">
-<meta property="og:image" content="https://img.icons8.com/isometric-line/512/armchair.png">
+<meta property="og:image" content="https://cdn-icons-png.flaticon.com/512/2590/2590525.png">
 
 <style>
   :root{
@@ -274,7 +276,7 @@
     transition:background .15s ease;
   }
   .fetch-btn:hover{background:var(--line)}
-  
+
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .modalbtns{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:20px;flex-wrap:wrap}
   .modalbtns-right{display:flex;gap:8px}
@@ -307,6 +309,7 @@
     </div>
   </header>
 
+  <!-- SCHWEBENDER BUDGET BUTTON -->
   <button class="cart-btn" onclick="toggleDrawer()">
     🛒 Budget & Übersicht
     <span class="cart-badge" id="cart-badge">0</span>
@@ -317,6 +320,7 @@
   <footer id="footer"></footer>
 </div>
 
+<!-- DRAWER -->
 <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-header">
@@ -343,6 +347,7 @@
   </div>
 </div>
 
+<!-- MODAL -->
 <div class="overlay" id="overlay">
   <div class="modal">
     <h3 id="modalTitle">Produkt bearbeiten</h3>
@@ -381,11 +386,11 @@
       <div class="row2">
         <div class="field">
           <label>Preis in € *</label>
-          <input type="text" id="f_price" placeholder="z. B. 199,00" required>
+          <input type="text" id="f_price" placeholder="z. B. 199,00" required onblur="autoFormatPriceField(this)">
         </div>
         <div class="field">
           <label>Alter Preis (optional)</label>
-          <input type="text" id="f_oldPrice" placeholder="z. B. 249,00">
+          <input type="text" id="f_oldPrice" placeholder="z. B. 249,00" onblur="autoFormatPriceField(this)">
         </div>
       </div>
       
@@ -417,8 +422,7 @@
 
 <script>
 const DB_URL = "https://wohnung-einrichtung-default-rtdb.firebaseio.com";
-// Eigener Proxy-Link oder automatischer Fallback-Scraper
-const PROXY_URL = "https://script.google.com/macros/s/AKfycbyWqG-kLwHZZ_wA7l1fA3o-eYqYl_DEINE_ID/exec"; 
+const PROXY_URL = "https://script.google.com/macros/s/AKfycbyWqG-kLwHZZ_wA7l1fA3o-eYqYl_DEINE_ID/exec";
 
 const SEED_PRODUCTS = [
   {"category":"Schlafzimmer · Bett (4 Kandidaten)","url":"https://www.xxxlutz.de/p/chameo-polsterbett-180-200-cm-in-beige-gepolstertes-kopfteil-lattenrost-bettkasten-002330009701","img":"https://media.xxxlutz.com/i/xxxlutz/PIlPZpsW3cZ117oikyQpa_Bw/?fmt=auto&w=600","noimg":"","badge":"","name":"CHAMEO Polsterbett · XXXLutz","price":"791,28 €","oldPrice":"1.099,00 €","bought":false,"id":1},
@@ -481,7 +485,6 @@ function saveUserState() {
   localStorage.setItem(userStorageKey, JSON.stringify(userState));
 }
 
-// Strikte Preisformatierung auf 2 Nachkommastellen (z. B. 129,00 €)
 function parsePrice(priceInput) {
   if (priceInput === null || priceInput === undefined) return 0;
   let str = String(priceInput).trim();
@@ -504,6 +507,12 @@ function formatEuro(num) {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
+}
+
+function autoFormatPriceField(inputElem) {
+  if (inputElem.value.trim() !== '') {
+    inputElem.value = formatEuro(inputElem.value);
+  }
 }
 
 async function syncFromCloud(silent = false){
@@ -566,53 +575,38 @@ function updatePreview(url){
 }
 
 function handleUrlPaste(e){
-  setTimeout(() => { fetchProductData(); }, 100);
+  setTimeout(() => { fetchProductData(); }, 150);
 }
 
-// Robuste Abrufen-Funktion mit automatischem Fallback-Scraper
+// Direkte Scraping-Logik wie zu Beginn
 async function fetchProductData(){
   const url = document.getElementById('f_url').value.trim();
   if(!url || !url.startsWith('http')) return;
+  if(PROXY_URL.includes("DEINE_ID")) {
+    console.warn("Bitte trage deine Google Apps Script Deployment-URL in PROXY_URL ein.");
+    return;
+  }
 
   const btn = document.getElementById('btnAutoFetch');
   btn.textContent = '⏳ Lädt...';
   btn.disabled = true;
 
   try {
-    let title = '', image = '', price = '';
-
-    // Falls eigener Google Script Proxy konfiguriert ist
-    if (!PROXY_URL.includes("DEINE_ID")) {
-      const res = await fetch(`${PROXY_URL}?url=${encodeURIComponent(url)}`);
-      const data = await res.json();
-      title = data.title || '';
-      image = data.image || '';
-      price = data.price || '';
-    } else {
-      // Fallback: Öffentlicher CORS-Proxy zum Auslesen der Metadaten
-      const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
-      const data = await res.json();
-      const html = data.contents || '';
-
-      const doc = new DOMParser().parseFromString(html, 'text/html');
-      title = doc.querySelector('meta[property="og:title"]')?.content || doc.querySelector('title')?.innerText || '';
-      image = doc.querySelector('meta[property="og:image"]')?.content || '';
-      price = doc.querySelector('meta[property="product:price:amount"]')?.content || 
-              doc.querySelector('meta[property="og:price:amount"]')?.content || '';
-    }
+    const res = await fetch(`${PROXY_URL}?url=${encodeURIComponent(url)}`);
+    const data = await res.json();
     
-    if(title && !document.getElementById('f_name').value){
-      document.getElementById('f_name').value = title.trim();
+    if(data.title && !document.getElementById('f_name').value){
+      document.getElementById('f_name').value = data.title;
     }
-    if(image && !document.getElementById('f_img').value){
-      document.getElementById('f_img').value = image.trim();
-      updatePreview(image.trim());
+    if(data.image && !document.getElementById('f_img').value){
+      document.getElementById('f_img').value = data.image;
+      updatePreview(data.image);
     }
-    if(price && !document.getElementById('f_price').value){
-      document.getElementById('f_price').value = formatEuro(price);
+    if(data.price && !document.getElementById('f_price').value){
+      document.getElementById('f_price').value = formatEuro(data.price);
     }
   } catch(err) {
-    console.error("Scraping-Fehler", err);
+    console.error("Scraping-Fehler:", err);
   } finally {
     btn.textContent = '✨ Abrufen';
     btn.disabled = false;
@@ -937,7 +931,8 @@ document.getElementById('productForm').addEventListener('submit', async (e) => {
   } else {
     productData.id = nextId++;
     products.push(productData);
-    if(!userState[productData.id]) userState[productData.id] = { selected: true, favorite: false };
+    // Standardmäßig NICHT ausgewählt
+    if(!userState[productData.id]) userState[productData.id] = { selected: false, favorite: false };
     saveUserState();
   }
 
@@ -963,7 +958,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// Shared Link Erkennung
+// Shared Link Erkennung (z. B. aus Instagram)
 window.addEventListener('DOMContentLoaded', () => {
   const sharedUrl = urlParams.get('share_url') || urlParams.get('share_text') || '';
   const sharedTitle = urlParams.get('share_title') || '';
