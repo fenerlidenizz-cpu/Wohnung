@@ -1,3 +1,5 @@
+const CACHE_NAME = 'wohnung-cache-v2';
+
 self.addEventListener('install', (e) => {
   self.skipWaiting();
 });
@@ -7,5 +9,8 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  e.respondWith(fetch(e.request));
+  // Lässt Netzwerkanfragen normal durch
+  e.respondWith(
+    fetch(e.request).catch(() => caches.match(e.request))
+  );
 });
