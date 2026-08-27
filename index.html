@@ -260,16 +260,16 @@
       </div>
 
       <div class="field">
-        <label>Kategorie</label>
-        <select id="f_category"></select>
+        <label>Kategorie *</label>
+        <select id="f_category" required></select>
       </div>
       <div class="field" id="newCatField" style="display:none">
-        <label>Name der neuen Kategorie</label>
+        <label>Name der neuen Kategorie *</label>
         <input type="text" id="f_newCategory" placeholder="z. B. Balkon, Flur">
       </div>
 
       <div class="field">
-        <label>Produktname</label>
+        <label>Produktname *</label>
         <input type="text" id="f_name" required placeholder="z. B. IKEA MALM Kommode">
       </div>
 
@@ -604,6 +604,15 @@ function populateCategorySelect(selectedCategory = ''){
     if(p.category && !categories.includes(p.category)) categories.push(p.category);
   }
   sel.innerHTML = '';
+  
+  // Leere Platzhalter-Option als Standard
+  const placeholderOpt = document.createElement('option');
+  placeholderOpt.value = '';
+  placeholderOpt.textContent = '-- Bitte Kategorie wählen --';
+  placeholderOpt.disabled = true;
+  if (!selectedCategory) placeholderOpt.selected = true;
+  sel.appendChild(placeholderOpt);
+
   for(const c of categories){
     const opt = document.createElement('option');
     opt.value = c; 
@@ -617,14 +626,19 @@ function populateCategorySelect(selectedCategory = ''){
   sel.appendChild(newOpt);
   
   sel.onchange = () => {
-    document.getElementById('newCatField').style.display = sel.value === '__new__' ? 'block' : 'none';
+    const isNew = sel.value === '__new__';
+    const newField = document.getElementById('newCatField');
+    const newInp = document.getElementById('f_newCategory');
+    newField.style.display = isNew ? 'block' : 'none';
+    newInp.required = isNew;
   };
 }
 
 function openAddModal(){
-  populateCategorySelect();
+  populateCategorySelect(''); // Startet immer leer
   document.getElementById('productForm').reset();
   document.getElementById('f_id').value = '';
+  document.getElementById('f_newCategory').required = false;
   document.getElementById('modalTitle').textContent = 'Neues Produkt hinzufügen';
   document.getElementById('btnSubmit').textContent = 'Hinzufügen';
   document.getElementById('btnDelete').style.display = 'none';
@@ -640,6 +654,7 @@ function openEditModal(id){
   populateCategorySelect(p.category);
   document.getElementById('productForm').reset();
   document.getElementById('f_id').value = p.id;
+  document.getElementById('f_newCategory').required = false;
   document.getElementById('modalTitle').textContent = 'Produkt bearbeiten';
   document.getElementById('btnSubmit').textContent = 'Speichern';
   document.getElementById('btnDelete').style.display = 'inline-flex';
@@ -672,6 +687,12 @@ document.getElementById('overlay').addEventListener('click', (e) => {
 document.getElementById('productForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const catSel = document.getElementById('f_category').value;
+  
+  if(!catSel) {
+    alert('Bitte wähle eine Kategorie aus.');
+    return;
+  }
+
   const category = catSel === '__new__'
     ? (document.getElementById('f_newCategory').value.trim() || 'Sonstiges')
     : catSel;
