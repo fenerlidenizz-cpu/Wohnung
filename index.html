@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Unsere Wohnung – Galerie</title>
+
+<!-- PWA & Mobile Web App Meta-Tags -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#7d6a55">
+<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3130/3130310.png">
+
 <style>
   :root{
     --bg:#faf9f7; --card:#ffffff; --ink:#1c1b19; --muted:#78736c;
@@ -131,7 +137,7 @@
   .fav-btn:hover{transform:scale(1.1)}
   .fav-btn.active{background:#fff;color:var(--fav);box-shadow:0 2px 8px rgba(0,0,0,0.2)}
 
-  /* SLIDE-OUT DRAWER (Warenkorb / Budget Übersicht) */
+  /* SLIDE-OUT DRAWER */
   .drawer-overlay{
     position:fixed;inset:0;background:rgba(20,18,15,.5);display:none;
     z-index:900;opacity:0;transition:opacity 0.3s ease;
@@ -216,7 +222,7 @@
   </div>
 </header>
 
-<!-- SCHWEBENDER / MITSCROLLENDER BUDGET BUTTON -->
+<!-- SCHWEBENDER BUDGET BUTTON -->
 <button class="cart-btn" onclick="toggleDrawer()">
   🛒 Budget & Auswahl
   <span class="cart-badge" id="cart-badge">0</span>
@@ -311,7 +317,7 @@
 
 <script>
 const DB_URL = "https://wohnung-einrichtung-default-rtdb.firebaseio.com";
-const PROXY_URL = "https://script.google.com/macros/s/AKfycbyWqG-kLwHZZ_wA7l1fA3o-eYqYl_DEINE_ID/exec";
+const PROXY_URL = "https://script.google.com/macros/s/AKfycbyWqG-kLwHZZ_wA7l1fA3o-eYqYl_DEINE_ID/exec"; 
 
 const SEED_PRODUCTS = [
   {"category":"Schlafzimmer · Bett (4 Kandidaten)","url":"https://www.xxxlutz.de/p/chameo-polsterbett-180-200-cm-in-beige-gepolstertes-kopfteil-lattenrost-bettkasten-002330009701","img":"https://media.xxxlutz.com/i/xxxlutz/PIlPZpsW3cZ117oikyQpa_Bw/?fmt=auto&w=600","noimg":"","badge":"","name":"CHAMEO Polsterbett · XXXLutz","price":"791,28 €","oldPrice":"1.099 €","id":1},
@@ -605,7 +611,6 @@ function populateCategorySelect(selectedCategory = ''){
   }
   sel.innerHTML = '';
   
-  // Leere Platzhalter-Option als Standard
   const placeholderOpt = document.createElement('option');
   placeholderOpt.value = '';
   placeholderOpt.textContent = '-- Bitte Kategorie wählen --';
@@ -635,7 +640,7 @@ function populateCategorySelect(selectedCategory = ''){
 }
 
 function openAddModal(){
-  populateCategorySelect(''); // Startet immer leer
+  populateCategorySelect('');
   document.getElementById('productForm').reset();
   document.getElementById('f_id').value = '';
   document.getElementById('f_newCategory').required = false;
@@ -735,6 +740,32 @@ async function deleteCurrentProduct(){
   closeModal();
   await saveProducts();
 }
+
+// Service Worker für PWA registrieren
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Fehler:', err));
+}
+
+// Erkennung für geteilte Links aus Instagram & Co.
+window.addEventListener('DOMContentLoaded', () => {
+  const sharedUrl = urlParams.get('share_url') || urlParams.get('share_text') || '';
+  const sharedTitle = urlParams.get('share_title') || '';
+
+  if (sharedUrl) {
+    let finalUrl = sharedUrl;
+    const urlMatch = sharedUrl.match(/https?:\/\/[^\s]+/);
+    if (urlMatch) {
+      finalUrl = urlMatch[0];
+    }
+
+    openAddModal();
+    document.getElementById('f_url').value = finalUrl;
+    if (sharedTitle) {
+      document.getElementById('f_name').value = sharedTitle;
+    }
+    setTimeout(() => { fetchProductData(); }, 300);
+  }
+});
 
 loadProducts();
 </script>
