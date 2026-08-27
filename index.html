@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Unsere Wohnung – Galerie</title>
 
+<!-- PWA & Mobile Web App Meta-Tags -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#7d6a55">
 <meta name="mobile-web-app-capable" content="yes">
@@ -13,6 +14,7 @@
 <link rel="icon" type="image/png" href="https://img.icons8.com/isometric-line/512/armchair.png">
 <link rel="apple-touch-icon" href="https://img.icons8.com/isometric-line/512/armchair.png">
 
+<!-- Social Media & Link-Vorschau -->
 <meta property="og:title" content="Unsere Wohnung – Galerie">
 <meta property="og:description" content="Möbel, Favoriten & Budget-Planung">
 <meta property="og:image" content="https://img.icons8.com/isometric-line/512/armchair.png">
@@ -21,12 +23,12 @@
   :root{
     --bg:#faf9f7; --card:#ffffff; --ink:#1c1b19; --muted:#78736c;
     --line:#e6e2dc; --accent:#7d6a55; --warn:#a8443a; --fav:#e5a11c;
-    --accent-light: #f1ece4; --shadow: 0 4px 16px rgba(0,0,0,0.06);
+    --success:#3b7a57; --accent-light: #f1ece4; --shadow: 0 4px 16px rgba(0,0,0,0.06);
   }
   @media (prefers-color-scheme: dark){
     :root{ --bg:#161513; --card:#201f1c; --ink:#f2efea; --muted:#9c968d;
            --line:#332f2a; --accent:#c4a882; --warn:#e08b80; --fav:#f5b73d;
-           --accent-light: #2c2720; --shadow: 0 4px 16px rgba(0,0,0,0.4); }
+           --success:#5bb381; --accent-light: #2c2720; --shadow: 0 4px 16px rgba(0,0,0,0.4); }
   }
   *{box-sizing:border-box}
   body{
@@ -150,6 +152,7 @@
   }
   .card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
   .card.selected{border-color:var(--accent);background:var(--accent-light)}
+  .card.bought{border-color:var(--success);opacity: 0.9;}
   
   .thumb{
     position:relative;aspect-ratio:1/1;background:#fff;
@@ -169,6 +172,8 @@
   .price{font-size:12.5px;font-weight:680;letter-spacing:-.01em}
   .price small{font-weight:400;color:var(--muted);text-decoration:line-through;margin-left:4px;font-size:10.5px}
 
+  .card-actions-toggles { display: flex; gap: 8px; align-items: center; }
+
   .select-toggle {
     display: flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 600; cursor: pointer; user-select: none; color: var(--muted);
   }
@@ -179,6 +184,10 @@
     font-size:9px;font-weight:650;letter-spacing:.03em;text-transform:uppercase;
     padding:2px 5px;border-radius:4px; z-index: 2;
   }
+  .badge.bought-badge {
+    background: var(--success);
+  }
+
   .fav-btn{
     position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.4);backdrop-filter:blur(4px);
     border:none;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;
@@ -187,13 +196,14 @@
   .fav-btn:hover{transform:scale(1.1)}
   .fav-btn.active{background:#fff;color:var(--fav);box-shadow:0 2px 6px rgba(0,0,0,0.2)}
 
+  /* SLIDE-OUT DRAWER MIT TABS */
   .drawer-overlay{
     position:fixed;inset:0;background:rgba(20,18,15,.5);display:none;
     z-index:900;opacity:0;transition:opacity 0.3s ease;
   }
   .drawer-overlay.open{display:block;opacity:1}
   .drawer{
-    position:fixed;top:0;right:-420px;width:100%;max-width:380px;height:100%;
+    position:fixed;top:0;right:-420px;width:100%;max-width:400px;height:100%;
     background:var(--card);box-shadow:-4px 0 24px rgba(0,0,0,0.15);z-index:1000;
     display:flex;flex-direction:column;transition:right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
@@ -201,7 +211,20 @@
   .drawer-header{
     padding:16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;
   }
-  .drawer-header h3{margin:0;font-size:16px;font-weight:650}
+  .drawer-tabs {
+    display: flex; gap: 6px; padding: 12px 16px 0; border-bottom: 1px solid var(--line); background: var(--bg);
+  }
+  .drawer-tab {
+    background: none; border: none; padding: 8px 12px; font-size: 12px; font-weight: 600; color: var(--muted);
+    cursor: pointer; border-bottom: 2px solid transparent; border-radius: 4px 4px 0 0;
+  }
+  .drawer-tab.active {
+    color: var(--accent); border-bottom-color: var(--accent); background: var(--card);
+  }
+  .drawer-tab.bought-tab.active {
+    color: var(--success); border-bottom-color: var(--success);
+  }
+
   .drawer-body{padding:16px;overflow-y:auto;flex-grow:1;display:flex;flex-direction:column;gap:8px}
   .drawer-item{
     display:flex;justify-content:space-between;align-items:center;padding:8px 10px;
@@ -212,10 +235,12 @@
   .drawer-item-cat{font-size:10px;color:var(--muted)}
   .drawer-item-price{font-weight:700;white-space:nowrap;margin-left:8px}
   .drawer-footer{padding:16px;border-top:1px solid var(--line);background:var(--bg)}
-  .total-row{display:flex;justify-content:space-between;font-size:15px;font-weight:700}
+  .total-row{display:flex;justify-content:space-between;font-size:14px;font-weight:700;margin-bottom:4px}
+  .total-row.spent{color:var(--success)}
 
   footer{margin:48px auto 0;color:var(--muted);font-size:11px;border-top:1px solid var(--line);padding-top:14px}
 
+  /* MODAL */
   .overlay{
     position:fixed;inset:0;background:rgba(20,18,15,.5);display:none;
     align-items:center;justify-content:center;padding:16px;z-index:1100;
@@ -239,6 +264,11 @@
   }
   .field input:focus, .field select:focus{outline:2px solid var(--accent);outline-offset:-1px}
   
+  .checkbox-field {
+    display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; cursor: pointer; padding: 4px 0;
+  }
+  .checkbox-field input { width: 16px; height: 16px; accent-color: var(--success); cursor: pointer; }
+
   .url-input-group{display:flex;gap:6px}
   .fetch-btn{
     flex-shrink:0;background:var(--bg);border:1px solid var(--line);color:var(--ink);
@@ -278,8 +308,9 @@
     </div>
   </header>
 
+  <!-- SCHWEBENDER BUDGET BUTTON -->
   <button class="cart-btn" onclick="toggleDrawer()">
-    🛒 Budget & Auswahl
+    🛒 Budget & Übersicht
     <span class="cart-badge" id="cart-badge">0</span>
     <span id="cart-btn-total">0,00 €</span>
   </button>
@@ -288,21 +319,34 @@
   <footer id="footer"></footer>
 </div>
 
+<!-- AUSKLAPP-FELD (WARENKORB / GEKAUFT DRAWER) -->
 <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-header">
-    <h3>Ausgewählte Produkte</h3>
+    <h3 id="drawerHeaderTitle">Budget & Übersicht</h3>
     <button class="cat-edit-btn" onclick="toggleDrawer()" style="font-size:16px">✕</button>
   </div>
+  
+  <div class="drawer-tabs">
+    <button class="drawer-tab active" id="tabPlan" onclick="switchDrawerTab('plan')">🛒 Geplant / Auswahl</button>
+    <button class="drawer-tab bought-tab" id="tabBought" onclick="switchDrawerTab('bought')">✅ Bereits gekauft</button>
+  </div>
+
   <div class="drawer-body" id="drawerItems"></div>
+  
   <div class="drawer-footer">
     <div class="total-row">
-      <span>Gesamtsumme:</span>
-      <span id="drawerTotal">0,00 €</span>
+      <span>Ausgewählt (Offen):</span>
+      <span id="drawerTotalPlan">0,00 €</span>
+    </div>
+    <div class="total-row spent">
+      <span>Bereits ausgegeben:</span>
+      <span id="drawerTotalBought">0,00 €</span>
     </div>
   </div>
 </div>
 
+<!-- MODAL FÜR BEARBEITUNG / ERSTELLUNG -->
 <div class="overlay" id="overlay">
   <div class="modal">
     <h3 id="modalTitle">Produkt bearbeiten</h3>
@@ -348,10 +392,16 @@
           <input type="text" id="f_oldPrice" placeholder="z. B. 249 €">
         </div>
       </div>
+      
       <div class="row2">
         <div class="field">
           <label>Badge (optional)</label>
           <input type="text" id="f_badge" placeholder="z. B. ausverkauft">
+        </div>
+        <div class="field" style="display: flex; align-items: flex-end; padding-bottom: 4px;">
+          <label class="checkbox-field">
+            <input type="checkbox" id="f_bought"> Bereits gekauft ✅
+          </label>
         </div>
       </div>
 
@@ -371,18 +421,18 @@
 
 <script>
 const DB_URL = "https://wohnung-einrichtung-default-rtdb.firebaseio.com";
-const PROXY_URL = "https://script.google.com/macros/s/AKfycbyxXPWJULlLQ9DTU59SCOrCZoWtzz-FGBZJ0SqjpGhsTBlByw5uHBdvIz9XNeq3CC2zng/exec"; 
+const PROXY_URL = "https://script.google.com/macros/s/AKfycbyWqG-kLwHZZ_wA7l1fA3o-eYqYl_DEINE_ID/exec"; 
 
 const SEED_PRODUCTS = [
-  {"category":"Schlafzimmer · Bett (4 Kandidaten)","url":"https://www.xxxlutz.de/p/chameo-polsterbett-180-200-cm-in-beige-gepolstertes-kopfteil-lattenrost-bettkasten-002330009701","img":"https://media.xxxlutz.com/i/xxxlutz/PIlPZpsW3cZ117oikyQpa_Bw/?fmt=auto&w=600","noimg":"","badge":"","name":"CHAMEO Polsterbett · XXXLutz","price":"791,28 €","oldPrice":"1.099 €","id":1},
-  {"category":"Schlafzimmer · Bett (4 Kandidaten)","url":"https://www.otto.de/p/moeblo-polsterbett-aus-boucle-bett-06-bezug-boucle-doppelbett-mit-kopfstuetze-rahmenbettgestell-mit-bettkasten-und-lattenrost-gepolstertes-kopfteil-S0LBH0AZ/","img":"https://i.otto.de/i/otto/9154705f-ad98-4c92-8ab8-7795f3d93d72/moeblo-polsterbett-aus-boucle-bett-06-bezug-boucle-doppelbett-mit-kopfstutze-rahmenbettgestell-mit-bettkasten-und-lattenrost-gepolstertes-kopfteil-creme-anthology-20.jpg?$formatz$","noimg":"","badge":"","name":"MOEBLO Bouclé „Bett 06\"","price":"679,00 €","oldPrice":"975 €","id":2},
-  {"category":"Schlafzimmer · Bett (4 Kandidaten)","url":"https://www.otto.de/p/beautysofa-polsterbett-mit-bettkasten-und-rahmen-motti-140-160-oder-180cm-mit-oder-ohne-matratze-S0FDX0KL/","img":"https://i.otto.de/i/otto/f03f6c72-3561-43fa-9a7a-867469658679/beautysofa-polsterbett-mit-bettkasten-und-rahmen-motti-140-160-oder-180cm-mit-oder-ohne-matratze-creme-catchme01.jpg?$formatz$","noimg":"","badge":"","name":"Beautysofa MOTTI","price":"729,00 €","oldPrice":"1.999 €","id":3},
-  {"category":"Schlafzimmer · Bett (4 Kandidaten)","url":"https://www.otto.de/p/thematys-polsterbett-mit-bettkasten-cloud-140x200-160x200-180x200-200x200cm-kopfteil-im-modernen-look-hochwertiger-boucle-stoff-inklusive-lattenrost-hochwertiger-stoff-hydraulische-klappfunktion-fuer-stauraum-S0KG10KG/","img":"https://i.otto.de/i/otto/45943c39-7a36-474d-808d-c3b83e0551b5/thematys-polsterbett-mit-bettkasten-cloud-140x200-160x200-180x200-200x200cm-kopfteil-im-modernen-look-hochwertiger-boucle-stoff-inklusive-lattenrost-hochwertiger-stoff-hydraulische-klappfunktion-fuer-stauraum-latte.jpg?$formatz$","noimg":"","badge":"","name":"thematys ALMA · Serie CLOUD","price":"859,00 €","oldPrice":"1.549 €","id":4},
-  {"category":"Schlafzimmer · Matratze, Topper, Schrank","url":"https://amzn.eu/d/07purMi5","img":"https://img-www.bett1.de/unsafe/rt:fit/w:800/h:0/g:sm/plain//media/23/89/16/1738228180/bett1_bodyguard-anti-kartell-matratze_gallery-01_de.png","noimg":"","badge":"","name":"bett1 BODYGUARD Matratze 180×200","price":"479,00 €","oldPrice":"","id":5},
-  {"category":"Schlafzimmer · Matratze, Topper, Schrank","url":"https://www.otto.de/p/otto-home-kleiderschrank-trento-schlafzimmerschrank-garderobe-hochglanz-in-2-unterschiedlichen-schrankhoehen-waehlbar-schrank-mit-6-tueren-und-9-schubladen-hochglanz-fronten-2-0-m-hoehe-2008696339/","img":"https://i.otto.de/i/otto/1b3fee32-cfea-50bc-ba2d-5bdce191c5b2/otto-home-kleiderschrank-trento-schlafzimmerschrank-garderobe-hochglanz-in-2-unterschiedlichen-schrankhoehen-waehlbar-schrank-mit-6-tueren-und-9-schubladen-hochglanz-fronten-2-0-m-hoehe-weiss.jpg?$formatz$","noimg":"","badge":"","name":"Kleiderschrank Trento · mit Türen","price":"599,99 €","oldPrice":"1.099,99 €","id":7},
-  {"category":"Wohnzimmer","url":"https://www.otto.de/p/otto-home-highboard-malmedy-front-mit-gefraesten-rillen-kommode-midischrank-aus-massivem-kiefernholz-push-to-open-b-100-cm-1954587039/","img":"https://i.otto.de/i/otto/5213baf4-04e6-5585-a411-3a9784a3f2e7/otto-home-highboard-malmedy-front-mit-gefraesten-rillen-kommode-midischrank-aus-massivem-kiefernholz-push-to-open-b-100-cm-natur-gebeizt-gewachst-korpus-natur-gebeizt-gewachst.jpg?$formatz$","noimg":"","badge":"","name":"INOSIGN Highboard Malmedy · Kiefer","price":"399,99 €","oldPrice":"719,99 €","id":17},
-  {"category":"Küche","url":"https://www.otto.de/p/smeg-kaffeevollautomat-bcc13whmeu-inkl-milchbehaelter-C1819169925/","img":"https://i.otto.de/i/otto/d47ea606-7a44-5676-9748-984dd81c0f40/smeg-kaffeevollautomat-bcc13whmeu-inkl-milchbehaelter-weiss.jpg?$formatz$","noimg":"","badge":"2,7 ★","name":"Smeg Kaffeevollautomat BCC13","price":"649,00 €","oldPrice":"799 €","id":18},
-  {"category":"Arbeitszimmer, Haushalt, Renovierung","name":"TROTTEN Schreibtisch sitz/steh, weiß, 120x70 cm","url":"https://www.ikea.com/de/de/p/trotten-schreibtisch-sitz-steh-weiss-s99429578/","img":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKGBS7blzzS39NpWuxjdASMBawVBEYNzORm1e_xqeb8A&s=10","noimg":"","price":"129,00 €","oldPrice":"","badge":"nur Online","id":35}
+  {"category":"Schlafzimmer · Bett (4 Kandidaten)","url":"https://www.xxxlutz.de/p/chameo-polsterbett-180-200-cm-in-beige-gepolstertes-kopfteil-lattenrost-bettkasten-002330009701","img":"https://media.xxxlutz.com/i/xxxlutz/PIlPZpsW3cZ117oikyQpa_Bw/?fmt=auto&w=600","noimg":"","badge":"","name":"CHAMEO Polsterbett · XXXLutz","price":"791,28 €","oldPrice":"1.099 €","bought":false,"id":1},
+  {"category":"Schlafzimmer · Bett (4 Kandidaten)","url":"https://www.otto.de/p/moeblo-polsterbett-aus-boucle-bett-06-bezug-boucle-doppelbett-mit-kopfstuetze-rahmenbettgestell-mit-bettkasten-und-lattenrost-gepolstertes-kopfteil-S0LBH0AZ/","img":"https://i.otto.de/i/otto/9154705f-ad98-4c92-8ab8-7795f3d93d72/moeblo-polsterbett-aus-boucle-bett-06-bezug-boucle-doppelbett-mit-kopfstutze-rahmenbettgestell-mit-bettkasten-und-lattenrost-gepolstertes-kopfteil-creme-anthology-20.jpg?$formatz$","noimg":"","badge":"","name":"MOEBLO Bouclé „Bett 06\"","price":"679,00 €","oldPrice":"975 €","bought":false,"id":2},
+  {"category":"Schlafzimmer · Bett (4 Kandidaten)","url":"https://www.otto.de/p/beautysofa-polsterbett-mit-bettkasten-und-rahmen-motti-140-160-oder-180cm-mit-oder-ohne-matratze-S0FDX0KL/","img":"https://i.otto.de/i/otto/f03f6c72-3561-43fa-9a7a-867469658679/beautysofa-polsterbett-mit-bettkasten-und-rahmen-motti-140-160-oder-180cm-mit-oder-ohne-matratze-creme-catchme01.jpg?$formatz$","noimg":"","badge":"","name":"Beautysofa MOTTI","price":"729,00 €","oldPrice":"1.999 €","bought":false,"id":3},
+  {"category":"Schlafzimmer · Bett (4 Kandidaten)","url":"https://www.otto.de/p/thematys-polsterbett-mit-bettkasten-cloud-140x200-160x200-180x200-200x200cm-kopfteil-im-modernen-look-hochwertiger-boucle-stoff-inklusive-lattenrost-hochwertiger-stoff-hydraulische-klappfunktion-fuer-stauraum-S0KG10KG/","img":"https://i.otto.de/i/otto/45943c39-7a36-474d-808d-c3b83e0551b5/thematys-polsterbett-mit-bettkasten-cloud-140x200-160x200-180x200-200x200cm-kopfteil-im-modernen-look-hochwertiger-boucle-stoff-inklusive-lattenrost-hochwertiger-stoff-hydraulische-klappfunktion-fuer-stauraum-latte.jpg?$formatz$","noimg":"","badge":"","name":"thematys ALMA · Serie CLOUD","price":"859,00 €","oldPrice":"1.549 €","bought":false,"id":4},
+  {"category":"Schlafzimmer · Matratze, Topper, Schrank","url":"https://amzn.eu/d/07purMi5","img":"https://img-www.bett1.de/unsafe/rt:fit/w:800/h:0/g:sm/plain//media/23/89/16/1738228180/bett1_bodyguard-anti-kartell-matratze_gallery-01_de.png","noimg":"","badge":"","name":"bett1 BODYGUARD Matratze 180×200","price":"479,00 €","oldPrice":"","bought":false,"id":5},
+  {"category":"Schlafzimmer · Matratze, Topper, Schrank","url":"https://www.otto.de/p/otto-home-kleiderschrank-trento-schlafzimmerschrank-garderobe-hochglanz-in-2-unterschiedlichen-schrankhoehen-waehlbar-schrank-mit-6-tueren-und-9-schubladen-hochglanz-fronten-2-0-m-hoehe-2008696339/","img":"https://i.otto.de/i/otto/1b3fee32-cfea-50bc-ba2d-5bdce191c5b2/otto-home-kleiderschrank-trento-schlafzimmerschrank-garderobe-hochglanz-in-2-unterschiedlichen-schrankhoehen-waehlbar-schrank-mit-6-tueren-und-9-schubladen-hochglanz-fronten-2-0-m-hoehe-weiss.jpg?$formatz$","noimg":"","badge":"","name":"Kleiderschrank Trento · mit Türen","price":"599,99 €","oldPrice":"1.099,99 €","bought":false,"id":7},
+  {"category":"Wohnzimmer","url":"https://www.otto.de/p/otto-home-highboard-malmedy-front-mit-gefraesten-rillen-kommode-midischrank-aus-massivem-kiefernholz-push-to-open-b-100-cm-1954587039/","img":"https://i.otto.de/i/otto/5213baf4-04e6-5585-a411-3a9784a3f2e7/otto-home-highboard-malmedy-front-mit-gefraesten-rillen-kommode-midischrank-aus-massivem-kiefernholz-push-to-open-b-100-cm-natur-gebeizt-gewachst-korpus-natur-gebeizt-gewachst.jpg?$formatz$","noimg":"","badge":"","name":"INOSIGN Highboard Malmedy · Kiefer","price":"399,99 €","oldPrice":"719,99 €","bought":false,"id":17},
+  {"category":"Küche","url":"https://www.otto.de/p/smeg-kaffeevollautomat-bcc13whmeu-inkl-milchbehaelter-C1819169925/","img":"https://i.otto.de/i/otto/d47ea606-7a44-5676-9748-984dd81c0f40/smeg-kaffeevollautomat-bcc13whmeu-inkl-milchbehaelter-weiss.jpg?$formatz$","noimg":"","badge":"2,7 ★","name":"Smeg Kaffeevollautomat BCC13","price":"649,00 €","oldPrice":"799 €","bought":false,"id":18},
+  {"category":"Arbeitszimmer, Haushalt, Renovierung","name":"TROTTEN Schreibtisch sitz/steh, weiß, 120x70 cm","url":"https://www.ikea.com/de/de/p/trotten-schreibtisch-sitz-steh-weiss-s99429578/","img":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKGBS7blzzS39NpWuxjdASMBawVBEYNzORm1e_xqeb8A&s=10","noimg":"","price":"129,00 €","oldPrice":"","badge":"nur Online","bought":false,"id":35}
 ];
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -400,6 +450,7 @@ if(currentUser !== 'standard'){
 }
 
 let currentGridCols = parseInt(localStorage.getItem('wohnung_grid_cols') || '3', 10);
+let activeDrawerTab = 'plan'; // 'plan' oder 'bought'
 
 function setGridCols(cols) {
   currentGridCols = cols;
@@ -422,7 +473,7 @@ const STORAGE_ENDPOINT = `${DB_URL}/lists/${encodeURIComponent(listId)}.json`;
 
 let products = [];
 let nextId = 1;
-let isModalOpen = false; // Verhindert Render-Abbruch während der Eingabe
+let isModalOpen = false;
 
 let userState = {};
 try {
@@ -433,7 +484,6 @@ function saveUserState() {
   localStorage.setItem(userStorageKey, JSON.stringify(userState));
 }
 
-// Background Sync (Polling) ohne Reloading
 async function syncFromCloud(silent = false){
   try {
     const res = await fetch(STORAGE_ENDPOINT);
@@ -453,7 +503,6 @@ async function syncFromCloud(silent = false){
       products = incoming;
       nextId = products.reduce((m,p)=>Math.max(m,p.id||0),0) + 1;
       
-      // Nur aktualisieren, wenn der Nutzer gerade NICHT im Modal editiert
       if(!isModalOpen) {
         render();
       }
@@ -468,7 +517,6 @@ async function loadProducts(){
   updateGridButtons();
   render();
 
-  // Hintergrund-Synchronisierung alle 5 Sekunden
   setInterval(() => {
     syncFromCloud(true);
   }, 5000);
@@ -572,7 +620,8 @@ function render(){
     let catSelectedTotal = 0;
     items.forEach(p => {
       const state = userState[p.id] || { selected: false };
-      if(state.selected) catSelectedTotal += parsePrice(p.price);
+      // Nur ungekaufte, ausgewählte Gegenstände zur Plan-Summe zählen
+      if(state.selected && !p.bought) catSelectedTotal += parsePrice(p.price);
     });
 
     html += `<h2>
@@ -591,12 +640,17 @@ function render(){
       const state = userState[p.id] || { selected: false, favorite: false };
       const isSelected = state.selected;
       const isFav = state.favorite;
+      const isBought = Boolean(p.bought);
 
       html += '<div class="cardwrap">';
-      html += `<div class="card ${isSelected ? 'selected' : ''}" id="card-${p.id}">`;
+      html += `<div class="card ${isSelected ? 'selected' : ''} ${isBought ? 'bought' : ''}" id="card-${p.id}">`;
       
       html += '<div class="thumb" onclick="openEditModal(' + p.id + ')">';
-      if(p.badge) html += `<span class="badge">${escapeHtml(p.badge)}</span>`;
+      if(isBought) {
+        html += `<span class="badge bought-badge">✅ Gekauft</span>`;
+      } else if(p.badge) {
+        html += `<span class="badge">${escapeHtml(p.badge)}</span>`;
+      }
       html += `<button class="fav-btn ${isFav ? 'active' : ''}" title="Favorit" onclick="event.stopPropagation(); toggleFav(${p.id})">★</button>`;
       
       if(p.img){
@@ -614,9 +668,13 @@ function render(){
       if(p.oldPrice) html += `<small>${escapeHtml(p.oldPrice)}</small>`;
       html += '</span>';
 
-      html += `<label class="select-toggle" onclick="event.stopPropagation()">`;
-      html += `<input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleSelect(${p.id})"> Ausw.`;
-      html += `</label>`;
+      html += `<div class="card-actions-toggles">`;
+      if (!isBought) {
+        html += `<label class="select-toggle" onclick="event.stopPropagation()">`;
+        html += `<input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleSelect(${p.id})"> Ausw.`;
+        html += `</label>`;
+      }
+      html += `</div>`;
 
       html += '</div></div></div></div>';
     }
@@ -642,19 +700,42 @@ function toggleFav(id) {
   render();
 }
 
+function switchDrawerTab(tab) {
+  activeDrawerTab = tab;
+  document.getElementById('tabPlan').classList.toggle('active', tab === 'plan');
+  document.getElementById('tabBought').classList.toggle('active', tab === 'bought');
+  updateSummary();
+}
+
 function updateSummary() {
-  let total = 0;
-  let count = 0;
-  let drawerHtml = '';
+  let totalPlan = 0;
+  let countPlan = 0;
+  let totalBought = 0;
+  let countBought = 0;
+
+  let planItemsHtml = '';
+  let boughtItemsHtml = '';
 
   products.forEach(p => {
-    const state = userState[p.id];
-    if(state && state.selected) {
-      count++;
-      const pVal = parsePrice(p.price);
-      total += pVal;
-      
-      drawerHtml += `
+    const state = userState[p.id] || { selected: false, favorite: false };
+    const pVal = parsePrice(p.price);
+
+    if (p.bought) {
+      countBought++;
+      totalBought += pVal;
+      boughtItemsHtml += `
+        <div class="drawer-item">
+          <div>
+            <a href="${p.url || '#'}" target="_blank" rel="noopener" class="drawer-item-title">${state.favorite ? '★ ' : ''}${escapeHtml(p.name)} ↗</a>
+            <div class="drawer-item-cat">${escapeHtml(p.category)} · <strong style="color:var(--success)">Gekauft</strong></div>
+          </div>
+          <div class="drawer-item-price">${escapeHtml(p.price)}</div>
+        </div>
+      `;
+    } else if (state.selected) {
+      countPlan++;
+      totalPlan += pVal;
+      planItemsHtml += `
         <div class="drawer-item">
           <div>
             <a href="${p.url || '#'}" target="_blank" rel="noopener" class="drawer-item-title">${state.favorite ? '★ ' : ''}${escapeHtml(p.name)} ↗</a>
@@ -666,15 +747,20 @@ function updateSummary() {
     }
   });
 
-  document.getElementById('cart-badge').textContent = count;
-  document.getElementById('cart-btn-total').textContent = formatEuro(total);
-  document.getElementById('drawerTotal').textContent = formatEuro(total);
+  document.getElementById('cart-badge').textContent = countPlan;
+  document.getElementById('cart-btn-total').textContent = formatEuro(totalPlan);
+  document.getElementById('drawerTotalPlan').textContent = formatEuro(totalPlan);
+  document.getElementById('drawerTotalBought').textContent = formatEuro(totalBought);
 
   const drawerItems = document.getElementById('drawerItems');
-  if(count === 0) {
-    drawerItems.innerHTML = '<div style="color:var(--muted); text-align:center; margin-top:40px;">Noch keine Produkte ausgewählt.</div>';
+  if (activeDrawerTab === 'plan') {
+    drawerItems.innerHTML = countPlan === 0
+      ? '<div style="color:var(--muted); text-align:center; margin-top:40px;">Noch keine offenen Produkte ausgewählt.</div>'
+      : planItemsHtml;
   } else {
-    drawerItems.innerHTML = drawerHtml;
+    drawerItems.innerHTML = countBought === 0
+      ? '<div style="color:var(--muted); text-align:center; margin-top:40px;">Noch keine Produkte als „Bereits gekauft“ markiert.</div>'
+      : boughtItemsHtml;
   }
 }
 
@@ -740,6 +826,7 @@ function openAddModal(){
   populateCategorySelect('');
   document.getElementById('productForm').reset();
   document.getElementById('f_id').value = '';
+  document.getElementById('f_bought').checked = false;
   document.getElementById('f_newCategory').required = false;
   document.getElementById('modalTitle').textContent = 'Neues Produkt hinzufügen';
   document.getElementById('btnSubmit').textContent = 'Hinzufügen';
@@ -757,6 +844,7 @@ function openEditModal(id){
   populateCategorySelect(p.category);
   document.getElementById('productForm').reset();
   document.getElementById('f_id').value = p.id;
+  document.getElementById('f_bought').checked = Boolean(p.bought);
   document.getElementById('f_newCategory').required = false;
   document.getElementById('modalTitle').textContent = 'Produkt bearbeiten';
   document.getElementById('btnSubmit').textContent = 'Speichern';
@@ -811,6 +899,7 @@ document.getElementById('productForm').addEventListener('submit', async (e) => {
     price: document.getElementById('f_price').value.trim(),
     oldPrice: document.getElementById('f_oldPrice').value.trim(),
     badge: document.getElementById('f_badge').value.trim(),
+    bought: document.getElementById('f_bought').checked
   };
 
   if(idVal){
@@ -846,13 +935,6 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Fehler:', err));
   });
 }
-
-// PWA Install Prompt Listener
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-});
 
 // Shared Link Erkennung
 window.addEventListener('DOMContentLoaded', () => {
