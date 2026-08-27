@@ -19,7 +19,7 @@
   body{
     margin:0; background:var(--bg); color:var(--ink);
     font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    padding:32px 20px 64px;
+    padding:32px 20px 100px;
   }
   header{max-width:1200px;margin:0 auto 40px;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:flex-start}
   h1{font-size:28px;font-weight:650;letter-spacing:-.02em;margin:0 0 8px}
@@ -32,15 +32,39 @@
   }
   .addbtn:hover{transform:translateY(-1px);opacity:.92}
 
-  /* WARENKORB / BUDGET BUTTON */
+  /* MITSCROLLENDER / SCHWEBENDER BUDGET-BUTTON */
   .cart-btn {
-    background: var(--card); color: var(--ink); border: 1px solid var(--line); border-radius: 10px;
-    padding: 12px 18px; font-size: 14px; font-weight: 650; cursor: pointer; display: flex;
-    align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(0,0,0,.04); transition: background 0.2s;
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 800;
+    background: var(--card);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 50px;
+    padding: 14px 22px;
+    font-size: 14px;
+    font-weight: 650;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 8px 30px rgba(0,0,0,.18);
+    backdrop-filter: blur(8px);
+    transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
   }
-  .cart-btn:hover { background: var(--accent-light); }
+  .cart-btn:hover {
+    background: var(--accent-light);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 36px rgba(0,0,0,.22);
+  }
   .cart-badge {
-    background: var(--accent); color: #fff; border-radius: 50%; padding: 2px 7px; font-size: 11px; font-weight: 700;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 700;
   }
 
   h2{
@@ -188,14 +212,16 @@
     <p class="sub" id="subHeading">Live synchronisiert. Alle Änderungen sind sofort auf allen Geräten sichtbar.</p>
   </div>
   <div class="btn-bar">
-    <button class="cart-btn" onclick="toggleDrawer()">
-      🛒 Übersicht & Budget
-      <span class="cart-badge" id="cart-badge">0</span>
-      <span id="cart-btn-total">0,00 €</span>
-    </button>
     <button class="addbtn" onclick="openAddModal()">+ Produkt hinzufügen</button>
   </div>
 </header>
+
+<!-- SCHWEBENDER / MITSCROLLENDER BUDGET BUTTON -->
+<button class="cart-btn" onclick="toggleDrawer()">
+  🛒 Budget & Auswahl
+  <span class="cart-badge" id="cart-badge">0</span>
+  <span id="cart-btn-total">0,00 €</span>
+</button>
 
 <div id="content"><p class="empty">Lade Produkte...</p></div>
 <footer id="footer"></footer>
@@ -318,7 +344,6 @@ const STORAGE_ENDPOINT = `${DB_URL}/lists/${encodeURIComponent(listId)}.json`;
 let products = [];
 let nextId = 1;
 
-// Lokaler Speicher für Checkboxen und Favoriten pro User
 let userState = {};
 try {
   userState = JSON.parse(localStorage.getItem(userStorageKey)) || {};
@@ -442,7 +467,6 @@ function render(){
   for(const cat of categories){
     const items = products.filter(p => p.category === cat);
     
-    // Berechne Kategorie-Summe für ausgewählte Items
     let catSelectedTotal = 0;
     items.forEach(p => {
       const state = userState[p.id] || { selected: false };
@@ -469,7 +493,6 @@ function render(){
       html += '<div class="cardwrap">';
       html += `<div class="card ${isSelected ? 'selected' : ''}" id="card-${p.id}">`;
       
-      // Bild-Thumb / Link
       html += '<div class="thumb" onclick="openEditModal(' + p.id + ')">';
       if(p.badge) html += `<span class="badge">${escapeHtml(p.badge)}</span>`;
       html += `<button class="fav-btn ${isFav ? 'active' : ''}" title="Favorit" onclick="event.stopPropagation(); toggleFav(${p.id})">★</button>`;
@@ -481,7 +504,6 @@ function render(){
       }
       html += '</div>';
 
-      // Meta info
       html += '<div class="meta">';
       html += `<span class="name" onclick="openEditModal(${p.id})">${escapeHtml(p.name)}</span>`;
       
@@ -674,7 +696,6 @@ document.getElementById('productForm').addEventListener('submit', async (e) => {
   } else {
     productData.id = nextId++;
     products.push(productData);
-    // Standardmäßig neu hinzugefügte Produkte direkt auswählen
     if(!userState[productData.id]) userState[productData.id] = { selected: true, favorite: false };
     saveUserState();
   }
