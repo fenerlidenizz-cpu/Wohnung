@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Unsere Wohnung – Galerie</title>
 
-<!-- PWA & Mobile Web App Meta-Tags -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#7d6a55">
 <meta name="mobile-web-app-capable" content="yes">
@@ -14,7 +13,6 @@
 <link rel="icon" type="image/png" href="https://img.icons8.com/isometric-line/512/armchair.png">
 <link rel="apple-touch-icon" href="https://img.icons8.com/isometric-line/512/armchair.png">
 
-<!-- Social Media & Link-Vorschau -->
 <meta property="og:title" content="Unsere Wohnung – Galerie">
 <meta property="og:description" content="Möbel, Favoriten & Budget-Planung">
 <meta property="og:image" content="https://img.icons8.com/isometric-line/512/armchair.png">
@@ -196,7 +194,7 @@
   .fav-btn:hover{transform:scale(1.1)}
   .fav-btn.active{background:#fff;color:var(--fav);box-shadow:0 2px 6px rgba(0,0,0,0.2)}
 
-  /* SLIDE-OUT DRAWER MIT TABS */
+  /* DRAWER */
   .drawer-overlay{
     position:fixed;inset:0;background:rgba(20,18,15,.5);display:none;
     z-index:900;opacity:0;transition:opacity 0.3s ease;
@@ -273,6 +271,7 @@
   .fetch-btn{
     flex-shrink:0;background:var(--bg);border:1px solid var(--line);color:var(--ink);
     padding:0 10px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;
+    transition:background .15s ease;
   }
   .fetch-btn:hover{background:var(--line)}
   
@@ -308,7 +307,6 @@
     </div>
   </header>
 
-  <!-- SCHWEBENDER BUDGET BUTTON -->
   <button class="cart-btn" onclick="toggleDrawer()">
     🛒 Budget & Übersicht
     <span class="cart-badge" id="cart-badge">0</span>
@@ -319,7 +317,6 @@
   <footer id="footer"></footer>
 </div>
 
-<!-- AUSKLAPP-FELD (WARENKORB / GEKAUFT DRAWER) -->
 <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-header">
@@ -346,7 +343,6 @@
   </div>
 </div>
 
-<!-- MODAL FÜR BEARBEITUNG / ERSTELLUNG -->
 <div class="overlay" id="overlay">
   <div class="modal">
     <h3 id="modalTitle">Produkt bearbeiten</h3>
@@ -384,12 +380,12 @@
 
       <div class="row2">
         <div class="field">
-          <label>Preis</label>
-          <input type="text" id="f_price" placeholder="z. B. 199,00 €">
+          <label>Preis in € *</label>
+          <input type="text" id="f_price" placeholder="z. B. 199,00" required>
         </div>
         <div class="field">
           <label>Alter Preis (optional)</label>
-          <input type="text" id="f_oldPrice" placeholder="z. B. 249 €">
+          <input type="text" id="f_oldPrice" placeholder="z. B. 249,00">
         </div>
       </div>
       
@@ -421,17 +417,18 @@
 
 <script>
 const DB_URL = "https://wohnung-einrichtung-default-rtdb.firebaseio.com";
+// Eigener Proxy-Link oder automatischer Fallback-Scraper
 const PROXY_URL = "https://script.google.com/macros/s/AKfycbyWqG-kLwHZZ_wA7l1fA3o-eYqYl_DEINE_ID/exec"; 
 
 const SEED_PRODUCTS = [
-  {"category":"Schlafzimmer · Bett (4 Kandidaten)","url":"https://www.xxxlutz.de/p/chameo-polsterbett-180-200-cm-in-beige-gepolstertes-kopfteil-lattenrost-bettkasten-002330009701","img":"https://media.xxxlutz.com/i/xxxlutz/PIlPZpsW3cZ117oikyQpa_Bw/?fmt=auto&w=600","noimg":"","badge":"","name":"CHAMEO Polsterbett · XXXLutz","price":"791,28 €","oldPrice":"1.099 €","bought":false,"id":1},
-  {"category":"Schlafzimmer · Bett (4 Kandidaten)","url":"https://www.otto.de/p/moeblo-polsterbett-aus-boucle-bett-06-bezug-boucle-doppelbett-mit-kopfstuetze-rahmenbettgestell-mit-bettkasten-und-lattenrost-gepolstertes-kopfteil-S0LBH0AZ/","img":"https://i.otto.de/i/otto/9154705f-ad98-4c92-8ab8-7795f3d93d72/moeblo-polsterbett-aus-boucle-bett-06-bezug-boucle-doppelbett-mit-kopfstutze-rahmenbettgestell-mit-bettkasten-und-lattenrost-gepolstertes-kopfteil-creme-anthology-20.jpg?$formatz$","noimg":"","badge":"","name":"MOEBLO Bouclé „Bett 06\"","price":"679,00 €","oldPrice":"975 €","bought":false,"id":2},
-  {"category":"Schlafzimmer · Bett (4 Kandidaten)","url":"https://www.otto.de/p/beautysofa-polsterbett-mit-bettkasten-und-rahmen-motti-140-160-oder-180cm-mit-oder-ohne-matratze-S0FDX0KL/","img":"https://i.otto.de/i/otto/f03f6c72-3561-43fa-9a7a-867469658679/beautysofa-polsterbett-mit-bettkasten-und-rahmen-motti-140-160-oder-180cm-mit-oder-ohne-matratze-creme-catchme01.jpg?$formatz$","noimg":"","badge":"","name":"Beautysofa MOTTI","price":"729,00 €","oldPrice":"1.999 €","bought":false,"id":3},
-  {"category":"Schlafzimmer · Bett (4 Kandidaten)","url":"https://www.otto.de/p/thematys-polsterbett-mit-bettkasten-cloud-140x200-160x200-180x200-200x200cm-kopfteil-im-modernen-look-hochwertiger-boucle-stoff-inklusive-lattenrost-hochwertiger-stoff-hydraulische-klappfunktion-fuer-stauraum-S0KG10KG/","img":"https://i.otto.de/i/otto/45943c39-7a36-474d-808d-c3b83e0551b5/thematys-polsterbett-mit-bettkasten-cloud-140x200-160x200-180x200-200x200cm-kopfteil-im-modernen-look-hochwertiger-boucle-stoff-inklusive-lattenrost-hochwertiger-stoff-hydraulische-klappfunktion-fuer-stauraum-latte.jpg?$formatz$","noimg":"","badge":"","name":"thematys ALMA · Serie CLOUD","price":"859,00 €","oldPrice":"1.549 €","bought":false,"id":4},
+  {"category":"Schlafzimmer · Bett (4 Kandidaten)","url":"https://www.xxxlutz.de/p/chameo-polsterbett-180-200-cm-in-beige-gepolstertes-kopfteil-lattenrost-bettkasten-002330009701","img":"https://media.xxxlutz.com/i/xxxlutz/PIlPZpsW3cZ117oikyQpa_Bw/?fmt=auto&w=600","noimg":"","badge":"","name":"CHAMEO Polsterbett · XXXLutz","price":"791,28 €","oldPrice":"1.099,00 €","bought":false,"id":1},
+  {"category":"Schlafzimmer · Bett (4 Kandidaten)","url":"https://www.otto.de/p/moeblo-polsterbett-aus-boucle-bett-06-bezug-boucle-doppelbett-mit-kopfstuetze-rahmenbettgestell-mit-bettkasten-und-lattenrost-gepolstertes-kopfteil-S0LBH0AZ/","img":"https://i.otto.de/i/otto/9154705f-ad98-4c92-8ab8-7795f3d93d72/moeblo-polsterbett-aus-boucle-bett-06-bezug-boucle-doppelbett-mit-kopfstutze-rahmenbettgestell-mit-bettkasten-und-lattenrost-gepolstertes-kopfteil-creme-anthology-20.jpg?$formatz$","noimg":"","badge":"","name":"MOEBLO Bouclé „Bett 06\"","price":"679,00 €","oldPrice":"975,00 €","bought":false,"id":2},
+  {"category":"Schlafzimmer · Bett (4 Kandidaten)","url":"https://www.otto.de/p/beautysofa-polsterbett-mit-bettkasten-und-rahmen-motti-140-160-oder-180cm-mit-oder-ohne-matratze-S0FDX0KL/","img":"https://i.otto.de/i/otto/f03f6c72-3561-43fa-9a7a-867469658679/beautysofa-polsterbett-mit-bettkasten-und-rahmen-motti-140-160-oder-180cm-mit-oder-ohne-matratze-creme-catchme01.jpg?$formatz$","noimg":"","badge":"","name":"Beautysofa MOTTI","price":"729,00 €","oldPrice":"1.999,00 €","bought":false,"id":3},
+  {"category":"Schlafzimmer · Bett (4 Kandidaten)","url":"https://www.otto.de/p/thematys-polsterbett-mit-bettkasten-cloud-140x200-160x200-180x200-200x200cm-kopfteil-im-modernen-look-hochwertiger-boucle-stoff-inklusive-lattenrost-hochwertiger-stoff-hydraulische-klappfunktion-fuer-stauraum-S0KG10KG/","img":"https://i.otto.de/i/otto/45943c39-7a36-474d-808d-c3b83e0551b5/thematys-polsterbett-mit-bettkasten-cloud-140x200-160x200-180x200-200x200cm-kopfteil-im-modernen-look-hochwertiger-boucle-stoff-inklusive-lattenrost-hochwertiger-stoff-hydraulische-klappfunktion-fuer-stauraum-latte.jpg?$formatz$","noimg":"","badge":"","name":"thematys ALMA · Serie CLOUD","price":"859,00 €","oldPrice":"1.549,00 €","bought":false,"id":4},
   {"category":"Schlafzimmer · Matratze, Topper, Schrank","url":"https://amzn.eu/d/07purMi5","img":"https://img-www.bett1.de/unsafe/rt:fit/w:800/h:0/g:sm/plain//media/23/89/16/1738228180/bett1_bodyguard-anti-kartell-matratze_gallery-01_de.png","noimg":"","badge":"","name":"bett1 BODYGUARD Matratze 180×200","price":"479,00 €","oldPrice":"","bought":false,"id":5},
   {"category":"Schlafzimmer · Matratze, Topper, Schrank","url":"https://www.otto.de/p/otto-home-kleiderschrank-trento-schlafzimmerschrank-garderobe-hochglanz-in-2-unterschiedlichen-schrankhoehen-waehlbar-schrank-mit-6-tueren-und-9-schubladen-hochglanz-fronten-2-0-m-hoehe-2008696339/","img":"https://i.otto.de/i/otto/1b3fee32-cfea-50bc-ba2d-5bdce191c5b2/otto-home-kleiderschrank-trento-schlafzimmerschrank-garderobe-hochglanz-in-2-unterschiedlichen-schrankhoehen-waehlbar-schrank-mit-6-tueren-und-9-schubladen-hochglanz-fronten-2-0-m-hoehe-weiss.jpg?$formatz$","noimg":"","badge":"","name":"Kleiderschrank Trento · mit Türen","price":"599,99 €","oldPrice":"1.099,99 €","bought":false,"id":7},
   {"category":"Wohnzimmer","url":"https://www.otto.de/p/otto-home-highboard-malmedy-front-mit-gefraesten-rillen-kommode-midischrank-aus-massivem-kiefernholz-push-to-open-b-100-cm-1954587039/","img":"https://i.otto.de/i/otto/5213baf4-04e6-5585-a411-3a9784a3f2e7/otto-home-highboard-malmedy-front-mit-gefraesten-rillen-kommode-midischrank-aus-massivem-kiefernholz-push-to-open-b-100-cm-natur-gebeizt-gewachst-korpus-natur-gebeizt-gewachst.jpg?$formatz$","noimg":"","badge":"","name":"INOSIGN Highboard Malmedy · Kiefer","price":"399,99 €","oldPrice":"719,99 €","bought":false,"id":17},
-  {"category":"Küche","url":"https://www.otto.de/p/smeg-kaffeevollautomat-bcc13whmeu-inkl-milchbehaelter-C1819169925/","img":"https://i.otto.de/i/otto/d47ea606-7a44-5676-9748-984dd81c0f40/smeg-kaffeevollautomat-bcc13whmeu-inkl-milchbehaelter-weiss.jpg?$formatz$","noimg":"","badge":"2,7 ★","name":"Smeg Kaffeevollautomat BCC13","price":"649,00 €","oldPrice":"799 €","bought":false,"id":18},
+  {"category":"Küche","url":"https://www.otto.de/p/smeg-kaffeevollautomat-bcc13whmeu-inkl-milchbehaelter-C1819169925/","img":"https://i.otto.de/i/otto/d47ea606-7a44-5676-9748-984dd81c0f40/smeg-kaffeevollautomat-bcc13whmeu-inkl-milchbehaelter-weiss.jpg?$formatz$","noimg":"","badge":"2,7 ★","name":"Smeg Kaffeevollautomat BCC13","price":"649,00 €","oldPrice":"799,00 €","bought":false,"id":18},
   {"category":"Arbeitszimmer, Haushalt, Renovierung","name":"TROTTEN Schreibtisch sitz/steh, weiß, 120x70 cm","url":"https://www.ikea.com/de/de/p/trotten-schreibtisch-sitz-steh-weiss-s99429578/","img":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKGBS7blzzS39NpWuxjdASMBawVBEYNzORm1e_xqeb8A&s=10","noimg":"","price":"129,00 €","oldPrice":"","badge":"nur Online","bought":false,"id":35}
 ];
 
@@ -450,7 +447,7 @@ if(currentUser !== 'standard'){
 }
 
 let currentGridCols = parseInt(localStorage.getItem('wohnung_grid_cols') || '3', 10);
-let activeDrawerTab = 'plan'; // 'plan' oder 'bought'
+let activeDrawerTab = 'plan';
 
 function setGridCols(cols) {
   currentGridCols = cols;
@@ -482,6 +479,31 @@ try {
 
 function saveUserState() {
   localStorage.setItem(userStorageKey, JSON.stringify(userState));
+}
+
+// Strikte Preisformatierung auf 2 Nachkommastellen (z. B. 129,00 €)
+function parsePrice(priceInput) {
+  if (priceInput === null || priceInput === undefined) return 0;
+  let str = String(priceInput).trim();
+  if (!str) return 0;
+  let clean = str.replace(/[^0-9,.-]/g, '');
+  if (clean.includes(',') && clean.includes('.')) {
+    clean = clean.replace(/\./g, '').replace(',', '.');
+  } else if (clean.includes(',')) {
+    clean = clean.replace(',', '.');
+  }
+  const val = parseFloat(clean);
+  return isNaN(val) ? 0 : val;
+}
+
+function formatEuro(num) {
+  const val = typeof num === 'number' ? num : parsePrice(num);
+  return val.toLocaleString("de-DE", { 
+    style: "currency", 
+    currency: "EUR",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
 }
 
 async function syncFromCloud(silent = false){
@@ -547,28 +569,47 @@ function handleUrlPaste(e){
   setTimeout(() => { fetchProductData(); }, 100);
 }
 
+// Robuste Abrufen-Funktion mit automatischem Fallback-Scraper
 async function fetchProductData(){
   const url = document.getElementById('f_url').value.trim();
   if(!url || !url.startsWith('http')) return;
-  if(PROXY_URL.includes("DEINE_ID")) return;
 
   const btn = document.getElementById('btnAutoFetch');
   btn.textContent = '⏳ Lädt...';
   btn.disabled = true;
 
   try {
-    const res = await fetch(`${PROXY_URL}?url=${encodeURIComponent(url)}`);
-    const data = await res.json();
+    let title = '', image = '', price = '';
+
+    // Falls eigener Google Script Proxy konfiguriert ist
+    if (!PROXY_URL.includes("DEINE_ID")) {
+      const res = await fetch(`${PROXY_URL}?url=${encodeURIComponent(url)}`);
+      const data = await res.json();
+      title = data.title || '';
+      image = data.image || '';
+      price = data.price || '';
+    } else {
+      // Fallback: Öffentlicher CORS-Proxy zum Auslesen der Metadaten
+      const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+      const data = await res.json();
+      const html = data.contents || '';
+
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      title = doc.querySelector('meta[property="og:title"]')?.content || doc.querySelector('title')?.innerText || '';
+      image = doc.querySelector('meta[property="og:image"]')?.content || '';
+      price = doc.querySelector('meta[property="product:price:amount"]')?.content || 
+              doc.querySelector('meta[property="og:price:amount"]')?.content || '';
+    }
     
-    if(data.title && !document.getElementById('f_name').value){
-      document.getElementById('f_name').value = data.title;
+    if(title && !document.getElementById('f_name').value){
+      document.getElementById('f_name').value = title.trim();
     }
-    if(data.image && !document.getElementById('f_img').value){
-      document.getElementById('f_img').value = data.image;
-      updatePreview(data.image);
+    if(image && !document.getElementById('f_img').value){
+      document.getElementById('f_img').value = image.trim();
+      updatePreview(image.trim());
     }
-    if(data.price && !document.getElementById('f_price').value){
-      document.getElementById('f_price').value = data.price;
+    if(price && !document.getElementById('f_price').value){
+      document.getElementById('f_price').value = formatEuro(price);
     }
   } catch(err) {
     console.error("Scraping-Fehler", err);
@@ -581,22 +622,6 @@ async function fetchProductData(){
 function escapeHtml(str){
   if(!str) return '';
   return str.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-
-function parsePrice(priceStr) {
-  if (!priceStr) return 0;
-  let clean = priceStr.replace(/[^0-9,.-]/g, '');
-  if (clean.includes(',') && clean.includes('.')) {
-    clean = clean.replace(/\./g, '').replace(',', '.');
-  } else if (clean.includes(',')) {
-    clean = clean.replace(',', '.');
-  }
-  const val = parseFloat(clean);
-  return isNaN(val) ? 0 : val;
-}
-
-function formatEuro(num) {
-  return num.toLocaleString("de-DE", { style: "currency", currency: "EUR" });
 }
 
 function render(){
@@ -620,7 +645,6 @@ function render(){
     let catSelectedTotal = 0;
     items.forEach(p => {
       const state = userState[p.id] || { selected: false };
-      // Nur ungekaufte, ausgewählte Gegenstände zur Plan-Summe zählen
       if(state.selected && !p.bought) catSelectedTotal += parsePrice(p.price);
     });
 
@@ -664,8 +688,8 @@ function render(){
       html += `<span class="name" onclick="openEditModal(${p.id})">${escapeHtml(p.name)}</span>`;
       
       html += '<div class="card-footer-row">';
-      html += `<span class="price">${escapeHtml(p.price)}`;
-      if(p.oldPrice) html += `<small>${escapeHtml(p.oldPrice)}</small>`;
+      html += `<span class="price">${formatEuro(p.price)}`;
+      if(p.oldPrice) html += `<small>${formatEuro(p.oldPrice)}</small>`;
       html += '</span>';
 
       html += `<div class="card-actions-toggles">`;
@@ -729,7 +753,7 @@ function updateSummary() {
             <a href="${p.url || '#'}" target="_blank" rel="noopener" class="drawer-item-title">${state.favorite ? '★ ' : ''}${escapeHtml(p.name)} ↗</a>
             <div class="drawer-item-cat">${escapeHtml(p.category)} · <strong style="color:var(--success)">Gekauft</strong></div>
           </div>
-          <div class="drawer-item-price">${escapeHtml(p.price)}</div>
+          <div class="drawer-item-price">${formatEuro(p.price)}</div>
         </div>
       `;
     } else if (state.selected) {
@@ -741,7 +765,7 @@ function updateSummary() {
             <a href="${p.url || '#'}" target="_blank" rel="noopener" class="drawer-item-title">${state.favorite ? '★ ' : ''}${escapeHtml(p.name)} ↗</a>
             <div class="drawer-item-cat">${escapeHtml(p.category)}</div>
           </div>
-          <div class="drawer-item-price">${escapeHtml(p.price)}</div>
+          <div class="drawer-item-price">${formatEuro(p.price)}</div>
         </div>
       `;
     }
@@ -859,8 +883,8 @@ function openEditModal(id){
   document.getElementById('f_name').value = p.name || '';
   document.getElementById('f_url').value = p.url || '';
   document.getElementById('f_img').value = p.img || '';
-  document.getElementById('f_price').value = p.price || '';
-  document.getElementById('f_oldPrice').value = p.oldPrice || '';
+  document.getElementById('f_price').value = formatEuro(p.price);
+  document.getElementById('f_oldPrice').value = p.oldPrice ? formatEuro(p.oldPrice) : '';
   document.getElementById('f_badge').value = p.badge || '';
   document.getElementById('newCatField').style.display = 'none';
 
@@ -890,14 +914,17 @@ document.getElementById('productForm').addEventListener('submit', async (e) => {
     : catSel;
   const idVal = document.getElementById('f_id').value;
 
+  const rawPrice = document.getElementById('f_price').value.trim();
+  const rawOldPrice = document.getElementById('f_oldPrice').value.trim();
+
   const productData = {
     category,
     name: document.getElementById('f_name').value.trim(),
     url: document.getElementById('f_url').value.trim(),
     img: document.getElementById('f_img').value.trim(),
     noimg: '',
-    price: document.getElementById('f_price').value.trim(),
-    oldPrice: document.getElementById('f_oldPrice').value.trim(),
+    price: formatEuro(rawPrice),
+    oldPrice: rawOldPrice ? formatEuro(rawOldPrice) : '',
     badge: document.getElementById('f_badge').value.trim(),
     bought: document.getElementById('f_bought').checked
   };
