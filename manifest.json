@@ -1,20 +1,24 @@
 {
-  "name": "Wohnungsgalerie",
+  "name": "Unsere Wohnung – Galerie",
   "short_name": "Wohnung",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#faf9f7",
   "theme_color": "#7d6a55",
+  "description": "Möbel, Favoriten & Budget-Planung für unsere Wohnung",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3130/3130310.png",
+      "src": "https://img.icons8.com/isometric-line/512/armchair.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3130/3130310.png",
+      "src": "https://img.icons8.com/isometric-line/512/armchair.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
   "share_target": {
